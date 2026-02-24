@@ -65,7 +65,16 @@ function App() {
   const [drag, setDrag] = useState(false);
   const [hist, setHist] = useState([]);
   const [showH, setShowH] = useState(false);
+  const [apiReady, setApiReady] = useState(false);
   const fRef = useRef(null);
+
+  // Auto-wake server on page load (free tier cold start)
+  React.useEffect(() => {
+    const wake = () => fetch("/health").then(r => { if (r.ok) setApiReady(true); }).catch(() => {
+      setTimeout(wake, 3000); // retry every 3s until server wakes
+    });
+    wake();
+  }, []);
 
   const gc = (name) => CL.find(c => c.n === name || name?.includes(c.n)) || CL[0];
   const mono = "'Space Mono', monospace";
@@ -137,7 +146,7 @@ function App() {
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           {hist.length > 0 && <button onClick={() => setShowH(!showH)} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", color: "#94a3b8", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 10, fontFamily: mono }}>{"HIST (" + hist.length + ")"}</button>}
-          <div style={{ background: "rgba(34,197,94,.15)", border: "1px solid rgba(34,197,94,.3)", borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: "#22c55e" }}>● TFLITE ML</div>
+          <div style={{ background: apiReady ? "rgba(34,197,94,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(34,197,94,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#22c55e" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
         </div>
       </div>
 
@@ -206,7 +215,7 @@ function App() {
                   {res && <div style={{ position: "absolute", top: 10, right: 10, background: gc(res.classification).c, color: "#fff", borderRadius: 7, padding: "4px 10px", fontSize: 10, fontWeight: 700, fontFamily: mono }}>{res.classification?.toUpperCase()}</div>}
                 </div>
                 <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                  {!busy && !res && <button onClick={analyze} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#22c55e,#059669)", color: "#fff", fontSize: 14, fontWeight: 700, boxShadow: "0 4px 20px rgba(34,197,94,.3)" }}>🔬 Analisar Olho</button>}
+                  {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#22c55e,#059669)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(34,197,94,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
                   <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "📷 Nova Foto" : "✕"}</button>
                   {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                     {WA(16)} Compartilhar
