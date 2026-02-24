@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: guard2live-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MODEL_PATH
+        value: guard2live_v2_9class.tflite
