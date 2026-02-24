@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Guard2Live — Screening Ocular por IA</title>
+
+  <!-- WhatsApp / Social sharing -->
+  <meta property="og:title" content="Guard2Live — Screening Ocular por IA"/>
+  <meta property="og:description" content="Detecta 8 condições oculares + sinais de doenças sistêmicas só com uma foto. Machine Learning treinado com 1.157 imagens."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:image" content="https://em-content.zobj.net/source/apple/391/eyes_1f440.png"/>
+  <meta name="description" content="Guard2Live — IA que analisa seus olhos e detecta sinais de doenças sistêmicas. 9 classes, MobileNetV2."/>
+
+  <!-- PWA / Mobile -->
+  <meta name="theme-color" content="#0a0e1a"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>"/>
+
+  <!-- React + Babel -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a0e1a;overflow-x:hidden}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes scan{0%{top:0}100%{top:100%}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.2)}50%{box-shadow:0 0 40px rgba(34,197,94,.4)}}
+    .bf{transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+    .btn{transition:all .2s;cursor:pointer}.btn:hover{transform:scale(1.03)}
+    @media(max-width:640px){.grid2{grid-template-columns:1fr !important}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState, useRef, useCallback } = React;
+
+const CL = [
+  { n: "Normal", c: "#22c55e", i: "\u2705", d: "Olho saud\u00e1vel, sem sinais de doen\u00e7a.", s: null, u: 0 },
+  { n: "Cataract", c: "#a78bfa", i: "\u26aa", d: "Opacidade do cristalino. Pupila esbranqui\u00e7ada.", s: null, u: 2 },
+  { n: "Conjunctivitis", c: "#ef4444", i: "\ud83d\udd34", d: "Inflama\u00e7\u00e3o da conjuntiva. Olho vermelho.", s: null, u: 1 },
+  { n: "Hemorrhage", c: "#dc2626", i: "\ud83e\ude78", d: "Hemorragia subconjuntival. Vaso rompido.", s: "Hipertens\u00e3o arterial, dist\u00farbios sangu\u00edneos", u: 2 },
+  { n: "Jaundice", c: "#eab308", i: "\ud83d\udfe1", d: "Icter\u00edcia. Amarelamento da esclera.", s: "Disfun\u00e7\u00e3o hep\u00e1tica, hepatite, obstru\u00e7\u00e3o biliar", u: 3 },
+  { n: "Pterygium", c: "#f97316", i: "\ud83d\udd3a", d: "Crescimento de tecido sobre a conjuntiva.", s: null, u: 1 },
+  { n: "Ptosis", c: "#3b82f6", i: "\ud83d\udc41\ufe0f", d: "P\u00e1lpebra ca\u00edda (ptose).", s: "AVC, miastenia gravis, dano nervoso", u: 3 },
+  { n: "Stye/Chalazion", c: "#ec4899", i: "\ud83e\udee7", d: "N\u00f3dulo na p\u00e1lpebra. Ter\u00e7ol/cal\u00e1zio.", s: null, u: 1 },
+  { n: "Uveitis", c: "#f59e0b", i: "\ud83d\udfe0", d: "Inflama\u00e7\u00e3o da \u00favea. Vermelhid\u00e3o profunda.", s: "Doen\u00e7as autoimunes, infec\u00e7\u00f5es sist\u00eamicas", u: 2 },
+];
+const UL = [
+  { l: "Sem a\u00e7\u00e3o necess\u00e1ria", c: "#22c55e", i: "\u2705" },
+  { l: "Monitorar \u2014 consulte se persistir", c: "#eab308", i: "\ud83d\udc40" },
+  { l: "Agendar consulta em 30 dias", c: "#f97316", i: "\ud83d\udccb" },
+  { l: "Consultar m\u00e9dico em 7 dias", c: "#ef4444", i: "\ud83d\udea8" },
+];
+
+const WA_ICON = (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>;
+
+function App() {
+  const [img, setImg] = useState(null);
+  const [b64, setB64] = useState(null);
+  const [res, setRes] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  const [drag, setDrag] = useState(false);
+  const [hist, setHist] = useState([]);
+  const [showH, setShowH] = useState(false);
+  const fRef = useRef(null);
+
+  const gc = (name) => CL.find(c => c.n === name || name?.includes(c.n)) || CL[0];
+  const mono = "'Space Mono', monospace";
+  const cardBg = "rgba(255,255,255,0.03)";
+  const cardBd = "1px solid rgba(255,255,255,0.06)";
+  const appUrl = window.location.href;
+
+  const shareApp = () => {
+    const msg = `\ud83d\udc41\ufe0f Guard2Live \u2014 IA que analisa seus olhos e detecta sinais de doen\u00e7as sist\u00eamicas (f\u00edgado, AVC, hipertens\u00e3o) s\u00f3 com uma foto!\n\n\ud83d\udd2c 9 condi\u00e7\u00f5es detectadas por Machine Learning\n\ud83d\udcf1 Funciona no celular, \u00e9 s\u00f3 tirar foto\n\nTesta a\u00ed: ${appUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+  const shareResult = () => {
+    if (!res) return;
+    const cls = res.classification || "?";
+    const conf = Math.round((res.confidence || 0) * 100);
+    const syst = res.systemic_alert ? `\n\u26a0\ufe0f Alerta sist\u00eamico: ${res.systemic_alert}` : "";
+    const msg = `\ud83d\udc41\ufe0f Fiz um screening ocular com Guard2Live!\n\n\ud83d\udd2c Resultado: ${gc(cls).i} ${cls} (${conf}% confian\u00e7a)\n\ud83e\udd16 Modelo: Machine Learning${syst}\n\ud83d\udca1 ${res.recommendation || ""}\n\n\ud83d\udcf1 Fa\u00e7a o seu tamb\u00e9m: ${appUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const load = useCallback((file) => {
+    if (!file?.type.startsWith("image/")) return;
+    setRes(null); setErr(null);
+    const reader = new FileReader();
+    reader.onload = () => setB64(reader.result.split(",")[1]);
+    reader.readAsDataURL(file);
+    createImageBitmap(file).then(bmp => {
+      const s = Math.min(1, 600 / Math.max(bmp.width, bmp.height));
+      const w = Math.round(bmp.width * s), h = Math.round(bmp.height * s);
+      const cv = document.createElement("canvas");
+      cv.width = w; cv.height = h;
+      cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
+      bmp.close();
+      setImg(cv.toDataURL("image/jpeg", 0.75));
+    }).catch(() => setImg("ok"));
+  }, []);
+
+  const analyze = async () => {
+    if (!b64) return;
+    setBusy(true); setErr(null); setRes(null);
+    try {
+      const r = await fetch("/analyze-base64", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: b64 })
+      });
+      const parsed = await r.json();
+      if (parsed.error) throw new Error(parsed.error);
+      setRes(parsed);
+      setHist(prev => [{ img, res: parsed }, ...prev].slice(0, 10));
+    } catch (e) { setErr(`Erro: ${e.message}`); }
+    finally { setBusy(false); }
+  };
+
+  const reset = () => { setImg(null); setB64(null); setRes(null); setErr(null); };
+
+  return (
+    <div style={{ minHeight: "100vh", background: "linear-gradient(145deg, #0a0e1a 0%, #111827 40%, #0f172a 100%)", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#e2e8f0" }}>
+      <input ref={fRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={e => load(e.target.files?.[0])} />
+
+      {/* Header */}
+      <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#22c55e,#059669)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", boxShadow: "0 0 20px rgba(34,197,94,.3)" }}>G</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>Guard2Live <span style={{ color: "#22c55e", fontFamily: mono, fontSize: 11 }}>V2.1</span></div>
+            <div style={{ fontSize: 9, color: "#64748b", fontFamily: mono, letterSpacing: .5 }}>EYE SCREENING \u2022 9 CLASSES \u2022 ML</div>
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {hist.length > 0 && <button onClick={() => setShowH(!showH)} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", color: "#94a3b8", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 10, fontFamily: mono }}>HIST ({hist.length})</button>}
+          <div style={{ background: "rgba(34,197,94,.15)", border: "1px solid rgba(34,197,94,.3)", borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: "#22c55e" }}>\u25cf TFLITE ML</div>
+        </div>
+      </div>
+
+      <div style={{ maxWidth: 920, margin: "0 auto", padding: "24px 16px" }}>
+
+        {/* HOME */}
+        {!img && (
+          <div style={{ animation: "fadeUp .6s ease" }}>
+            <div style={{ textAlign: "center", marginBottom: 24 }}>
+              <h2 style={{ fontSize: 24, fontWeight: 700, color: "#f8fafc", marginBottom: 6 }}>An\u00e1lise Ocular por IA</h2>
+              <p style={{ color: "#64748b", fontSize: 13 }}>Detecta 8 condi\u00e7\u00f5es + indicadores de doen\u00e7as sist\u00eamicas</p>
+            </div>
+            <div onClick={() => fRef.current?.click()}
+              onDragOver={e => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}
+              onDrop={e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files[0]); }}
+              className="btn"
+              style={{ border: `2px dashed ${drag ? "#22c55e" : "rgba(255,255,255,.12)"}`, borderRadius: 20, padding: "44px 24px", textAlign: "center", marginBottom: 20, background: drag ? "rgba(34,197,94,.05)" : "rgba(255,255,255,.02)", cursor: "pointer" }}>
+              <div style={{ width: 68, height: 68, borderRadius: "50%", background: "rgba(34,197,94,.1)", margin: "0 auto 14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>{"\ud83d\udc41\ufe0f"}</div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: "#e2e8f0", marginBottom: 6 }}>Tire uma foto ou selecione do \u00e1lbum</div>
+              <div style={{ fontSize: 12, color: "#64748b", marginBottom: 12 }}>{"\ud83d\udcf1"} No celular abre a c\u00e2mera \u2022 {"\ud83d\udcbb"} No PC seleciona arquivo</div>
+              <div style={{ fontSize: 10, color: "#475569", fontFamily: mono }}>JPG / PNG \u2022 Foto externa do olho</div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 7 }}>
+              {CL.map(c => (
+                <div key={c.n} style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: "8px 10px", display: "flex", alignItems: "center", gap: 7 }}>
+                  <span style={{ fontSize: 16 }}>{c.i}</span>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: c.c }}>{c.n}</div>
+                    {c.s && <div style={{ fontSize: 7, color: "#f97316", marginTop: 1 }}>{"\u26a0"} Sist\u00eamica</div>}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* WhatsApp Share */}
+            <button onClick={shareApp} className="btn"
+              style={{ width: "100%", marginTop: 16, padding: "14px 20px", borderRadius: 12, border: "none",
+                background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 14, fontWeight: 700,
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                boxShadow: "0 4px 20px rgba(37,211,102,.3)" }}>
+              {WA_ICON(20)} Enviar pra um amigo
+            </button>
+          </div>
+        )}
+
+        {/* IMAGE + RESULTS */}
+        {img && (
+          <div style={{ animation: "fadeUp .5s ease" }}>
+            <div className="grid2" style={{ display: "grid", gridTemplateColumns: res ? "1fr 1fr" : "1fr", gap: 16 }}>
+              <div>
+                <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,.1)", background: "#000" }}>
+                  {img && img !== "ok" ? (
+                    <img src={img} alt="Eye" style={{ width: "100%", display: "block", maxHeight: 360, objectFit: "contain" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      <span style={{ fontSize: 36 }}>{"\ud83d\udcf8"}</span>
+                      <span style={{ fontSize: 12, color: "#22c55e", fontWeight: 600 }}>Foto carregada</span>
+                    </div>
+                  )}
+                  {busy && (
+                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#22c55e,transparent)", animation: "scan 1.5s linear infinite" }} />
+                      <div style={{ background: "rgba(0,0,0,.7)", borderRadius: 10, padding: "10px 20px", fontSize: 12, fontWeight: 600, fontFamily: mono, color: "#22c55e", animation: "pulse 1.5s infinite" }}>
+                        TFLITE INFERENCE...
+                      </div>
+                    </div>
+                  )}
+                  {res && <div style={{ position: "absolute", top: 10, right: 10, background: gc(res.classification).c, color: "#fff", borderRadius: 7, padding: "4px 10px", fontSize: 10, fontWeight: 700, fontFamily: mono }}>{res.classification?.toUpperCase()}</div>}
+                </div>
+                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+                  {!busy && !res && <button onClick={analyze} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg,#22c55e,#059669)", color: "#fff", fontSize: 14, fontWeight: 700, boxShadow: "0 4px 20px rgba(34,197,94,.3)" }}>{"\ud83d\udd2c"} Analisar Olho</button>}
+                  <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "\ud83d\udcf7 Nova Foto" : "\u2715"}</button>
+                  {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                    {WA_ICON(16)} Compartilhar
+                  </button>}
+                </div>
+              </div>
+
+              {res && (
+                <div style={{ animation: "slideIn .6s ease" }}>
+                  {/* Model badge */}
+                  <div style={{ marginBottom: 12 }}>
+                    <span style={{ background: "rgba(34,197,94,.1)", border: "1px solid rgba(34,197,94,.3)", borderRadius: 8, padding: "3px 10px", fontSize: 9, fontFamily: mono, color: "#22c55e" }}>MobileNetV2-TFLite</span>
+                  </div>
+
+                  {/* Description */}
+                  {res.description && (
+                    <div style={{ background: "rgba(255,255,255,.04)", border: cardBd, borderRadius: 10, padding: 11, marginBottom: 12 }}>
+                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 3, letterSpacing: 1 }}>O QUE A IA V\u00ca</div>
+                      <div style={{ fontSize: 11, color: "#cbd5e1", lineHeight: 1.5, fontStyle: "italic" }}>"{res.description}"</div>
+                    </div>
+                  )}
+
+                  {/* Classification */}
+                  <div style={{ background: `linear-gradient(135deg,${gc(res.classification).c}15,${gc(res.classification).c}05)`, border: `1px solid ${gc(res.classification).c}30`, borderRadius: 14, padding: 14, marginBottom: 12, animation: "glow 3s infinite" }}>
+                    <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 3, letterSpacing: 1 }}>CLASSIFICA\u00c7\u00c3O</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 26 }}>{gc(res.classification).i}</span>
+                      <div>
+                        <div style={{ fontSize: 18, fontWeight: 700, color: gc(res.classification).c }}>{res.classification}</div>
+                        <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{gc(res.classification).d}</div>
+                      </div>
+                    </div>
+                    <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ flex: 1, height: 5, borderRadius: 3, background: "rgba(255,255,255,.1)" }}>
+                        <div className="bf" style={{ height: "100%", borderRadius: 3, background: gc(res.classification).c, width: `${(res.confidence||0)*100}%` }} />
+                      </div>
+                      <span style={{ fontFamily: mono, fontSize: 14, fontWeight: 700, color: gc(res.classification).c }}>{Math.round((res.confidence||0)*100)}%</span>
+                    </div>
+                  </div>
+
+                  {/* Urgency */}
+                  {gc(res.classification).u > 0 && (() => { const u = UL[gc(res.classification).u]; return (
+                    <div style={{ background: `${u.c}12`, border: `1px solid ${u.c}30`, borderRadius: 10, padding: "9px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 15 }}>{u.i}</span>
+                      <div>
+                        <div style={{ fontSize: 9, fontFamily: mono, color: u.c, letterSpacing: 1, fontWeight: 700 }}>URG\u00caNCIA</div>
+                        <div style={{ fontSize: 11, color: u.c, marginTop: 1 }}>{u.l}</div>
+                      </div>
+                    </div>);
+                  })()}
+
+                  {/* Systemic */}
+                  {res.systemic_alert && (
+                    <div style={{ background: "rgba(249,115,22,.08)", border: "1px solid rgba(249,115,22,.2)", borderRadius: 10, padding: 11, marginBottom: 12 }}>
+                      <div style={{ fontSize: 9, fontFamily: mono, color: "#f97316", marginBottom: 3, letterSpacing: 1, fontWeight: 700 }}>{"\u26a0"} ALERTA SIST\u00caMICO</div>
+                      <div style={{ fontSize: 11, color: "#fdba74", lineHeight: 1.5 }}>{res.systemic_alert}</div>
+                    </div>
+                  )}
+
+                  {/* Scores */}
+                  <div style={{ background: cardBg, border: cardBd, borderRadius: 12, padding: 12, marginBottom: 12 }}>
+                    <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 8, letterSpacing: 1 }}>PROBABILIDADES \u2014 9 CLASSES</div>
+                    {res.scores && Object.entries(res.scores).sort((a,b) => b[1]-a[1]).map(([name,score],i) => {
+                      const info = gc(name);
+                      return (
+                        <div key={name} style={{ marginBottom: 5, animation: `slideIn ${.3+i*.05}s ease` }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2, fontSize: 9 }}>
+                            <span style={{ color: info.c, fontWeight: 600 }}>{info.i} {name}</span>
+                            <span style={{ fontFamily: mono, color: "#94a3b8" }}>{Math.round(score*100)}%</span>
+                          </div>
+                          <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,.06)" }}>
+                            <div className="bf" style={{ height: "100%", borderRadius: 2, background: info.c, width: `${score*100}%`, opacity: score>.05?1:.3 }} />
+                          </div>
+                        </div>);
+                    })}
+                  </div>
+
+                  {/* Findings */}
+                  {res.findings && (
+                    <div style={{ background: cardBg, border: cardBd, borderRadius: 12, padding: 12, marginBottom: 12 }}>
+                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 6, letterSpacing: 1 }}>ACHADOS CL\u00cdNICOS</div>
+                      {res.findings.map((f,i) => (
+                        <div key={i} style={{ display: "flex", gap: 5, marginBottom: 3, fontSize: 11, color: "#cbd5e1" }}>
+                          <span style={{ color: "#22c55e" }}>{"\u2192"}</span><span>{f}</span>
+                        </div>))}
+                    </div>
+                  )}
+
+                  {res.recommendation && (
+                    <div style={{ background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.15)", borderRadius: 10, padding: 11, fontSize: 11, color: "#fbbf24" }}>
+                      {"\ud83d\udca1"} {res.recommendation}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {err && <div style={{ marginTop: 12, background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 10, padding: 11, fontSize: 11, color: "#f87171", textAlign: "center" }}>{err}</div>}
+          </div>
+        )}
+
+        {/* History */}
+        {showH && hist.length > 0 && (
+          <div style={{ marginTop: 16, background: cardBg, border: cardBd, borderRadius: 14, padding: 14, animation: "fadeUp .4s ease" }}>
+            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 10, letterSpacing: 1 }}>HIST\u00d3RICO</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(90px,1fr))", gap: 7 }}>
+              {hist.map((h,i) => (
+                <div key={i} style={{ borderRadius: 8, overflow: "hidden", border: `1px solid ${gc(h.res.classification).c}30` }}>
+                  {h.img && h.img !== "ok" ? (
+                    <img src={h.img} style={{ width: "100%", height: 60, objectFit: "cover" }} />
+                  ) : (
+                    <div style={{ width: "100%", height: 60, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{"\ud83d\udcf8"}</div>
+                  )}
+                  <div style={{ padding: "3px 5px", fontSize: 8, fontFamily: mono, background: "rgba(0,0,0,.3)", color: gc(h.res.classification).c }}>
+                    {h.res.classification} {Math.round(h.res.confidence*100)}%
+                  </div>
+                </div>))}
+            </div>
+          </div>
+        )}
+
+        {/* Disclaimer */}
+        <div style={{ marginTop: 24, padding: 12, borderRadius: 10, background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.05)", textAlign: "center" }}>
+          <div style={{ fontSize: 9, color: "#475569", fontFamily: mono, lineHeight: 1.6 }}>
+            {"\u26a0\ufe0f"} SCREENING ONLY \u2014 NOT MEDICAL DIAGNOSTIC<br/>Guard2Live V2.1 \u2014 MIT xPRO educational demo. Consult an ophthalmologist.
+          </div>
+          <div style={{ marginTop: 6, fontSize: 8, color: "#334155", fontFamily: mono }}>
+            MODEL: MobileNetV2 TFLite \u2022 9 Classes \u2022 BBG \u00a9 2026
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

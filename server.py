@@ -4,7 +4,7 @@ Deploy on Render, Railway, or any Python host
 """
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 import numpy as np
 from PIL import Image
 import io
@@ -132,8 +132,17 @@ def generate_recommendation(cls: str, conf: float) -> str:
         return f"Possible {cls} detected. Professional evaluation recommended for definitive diagnosis."
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 async def root():
+    html_path = os.path.join(os.path.dirname(__file__) or ".", "index.html")
+    if os.path.exists(html_path):
+        with open(html_path, "r", encoding="utf-8") as f:
+            return HTMLResponse(content=f.read())
+    return JSONResponse({"service": "Guard2Live V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"})
+
+
+@app.get("/api")
+async def api_info():
     return {"service": "Guard2Live V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"}
 
 
