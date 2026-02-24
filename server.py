@@ -142,20 +142,21 @@ def run_inference(image_bytes: bytes) -> dict:
 
 
 def generate_findings(cls: str, conf: float, scores: dict) -> list:
+    """Generate findings — only what the AI detected, NO recommendations here"""
     findings_map = {
-        "Normal":         ["Esclera aparenta estar limpa", "Sem anormalidades visíveis detectadas", "Pupilas aparentam simétricas"],
-        "Cataract":       ["Opacidade ou turvação do cristalino detectada", "Área pupilar com claridade reduzida", "Possível indicador de comprometimento visual"],
-        "Conjunctivitis": ["Vermelhidão conjuntival detectada", "Possível inflamação da conjuntiva", "Monitorar secreção ou lacrimejamento"],
-        "Hemorrhage":     ["Hemorragia subconjuntival detectada", "Sangue visível na área escleral", "Pode indicar problema vascular"],
-        "Jaundice":       ["Amarelamento da esclera detectado", "Possível elevação de bilirrubina", "Avaliação sistêmica recomendada"],
-        "Pterygium":      ["Crescimento de tecido na conjuntiva detectado", "Crescimento se estendendo em direção à córnea", "Proteção UV recomendada"],
-        "Ptosis":         ["Queda da pálpebra detectada", "Posicionamento assimétrico das pálpebras", "Avaliação neurológica pode ser necessária"],
-        "Stye/Chalazion": ["Nódulo ou inchaço na pálpebra detectado", "Possível inflamação glandular", "Compressa morna recomendada"],
-        "Uveitis":        ["Vermelhidão ocular profunda detectada", "Possível inflamação da úvea", "Avaliação oftalmológica urgente necessária"],
+        "Normal":         ["Parte branca do olho aparenta limpa", "Nenhuma alteração visível detectada", "Coloração e formato dentro do esperado"],
+        "Cataract":       ["Possível opacidade na região do cristalino", "Área da pupila com claridade reduzida", "Pode afetar a nitidez da visão"],
+        "Conjunctivitis": ["Vermelhidão na superfície do olho detectada", "Possível inflamação da conjuntiva", "Pode haver secreção ou lacrimejamento"],
+        "Hemorrhage":     ["Mancha de sangue na parte branca do olho", "Vasos sanguíneos aparentam rompidos", "Aparência semelhante a um roxo na pele"],
+        "Jaundice":       ["Amarelamento na parte branca do olho", "Coloração diferente do esperado", "Pode estar relacionado ao fígado"],
+        "Pterygium":      ["Crescimento de tecido na superfície do olho", "Tecido se estendendo em direção à córnea", "Relacionado à exposição solar"],
+        "Ptosis":         ["Pálpebra superior mais caída que o normal", "Assimetria entre as pálpebras", "Pode ser por cansaço ou outras causas"],
+        "Stye/Chalazion": ["Nódulo ou inchaço na pálpebra detectado", "Possível glândula inflamada", "Comum e geralmente temporário"],
+        "Uveitis":        ["Vermelhidão profunda no olho detectada", "Possível inflamação interna", "Diferente de conjuntivite comum"],
     }
     base = findings_map.get(cls, ["Análise concluída"])
     if conf < 0.5:
-        base.append(f"Confiança baixa ({conf*100:.0f}%) — recomenda-se avaliação profissional")
+        base.append(f"Confiança da IA: {conf*100:.0f}% — resultado incerto")
     return base
 
 
@@ -218,15 +219,22 @@ CLASS_INFO = {
 
 
 def generate_recommendation(cls: str, conf: float) -> str:
-    pt = CLASS_PT.get(cls, cls)
-    if cls == "Normal" and conf > 0.7:
-        return "Sem preocupações imediatas. Continue com exames oftalmológicos regulares."
-    elif cls == "Normal":
-        return "Aparenta normal, mas com baixa confiança. Considere avaliação profissional se houver sintomas."
-    elif conf > 0.6:
-        return f"{pt} detectado(a) com boa confiança. Consulte um oftalmologista para avaliação adequada."
-    else:
-        return f"Possível {pt} detectado(a). Avaliação profissional recomendada para diagnóstico definitivo."
+    """Generate specific recommendation per condition — human-friendly language"""
+    rec_map = {
+        "Normal":         "Tudo certo! Mantenha seus exames de rotina em dia.",
+        "Cataract":       "Catarata é comum e tem solução. Quando puder, agende uma consulta oftalmológica para acompanhar.",
+        "Conjunctivitis": "Evite coçar o olho e lave as mãos com frequência. Se a vermelhidão persistir por mais de 3 dias, procure um médico.",
+        "Hemorrhage":     "Fique tranquilo, geralmente desaparece sozinho. Se acontecer com frequência, vale medir a pressão arterial.",
+        "Jaundice":       "Vale a pena fazer exames de sangue para checar o fígado. Procure um clínico geral.",
+        "Pterygium":      "Use óculos de sol com proteção UV. Se crescer ou incomodar a visão, procure um oftalmologista.",
+        "Ptosis":         "Se a pálpebra caída for recente ou piorar, procure avaliação médica. Se for antigo, geralmente é benigno.",
+        "Stye/Chalazion": "Aplique compressas mornas por 10 minutos, 3x ao dia. Se não melhorar em 2 semanas, procure um oftalmologista.",
+        "Uveitis":        "Procure um oftalmologista para avaliação. O tratamento com colírios costuma resolver bem.",
+    }
+    base = rec_map.get(cls, "Consulte um profissional de saúde para avaliação.")
+    if conf < 0.5 and cls != "Normal":
+        base = "A IA não tem certeza desse resultado. " + base
+    return base
 
 
 @app.get("/", response_class=HTMLResponse)
