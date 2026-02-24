@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: guard2live-api
+    name: eyecheck
     runtime: docker
     plan: free
     healthCheckPath: /health

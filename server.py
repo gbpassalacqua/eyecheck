@@ -1,5 +1,5 @@
 """
-Guard2Live V2.1 — TFLite Inference API
+EYECHECK V2.1 — TFLite Inference API
 Deploy on Render, Railway, or any Python host
 """
 from fastapi import FastAPI, UploadFile, File
@@ -22,7 +22,7 @@ except ImportError:
         import tensorflow.lite as tflite
         print("Using tensorflow.lite")
 
-app = FastAPI(title="Guard2Live V2.1 API", version="2.1.0")
+app = FastAPI(title="EYECHECK V2.1 API", version="2.1.0")
 
 # CORS — allow all origins (adjust in production)
 app.add_middleware(
@@ -138,12 +138,12 @@ async def root():
     if os.path.exists(html_path):
         with open(html_path, "r", encoding="utf-8") as f:
             return HTMLResponse(content=f.read())
-    return JSONResponse({"service": "Guard2Live V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"})
+    return JSONResponse({"service": "EYECHECK V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"})
 
 
 @app.get("/api")
 async def api_info():
-    return {"service": "Guard2Live V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"}
+    return {"service": "EYECHECK V2.1 API", "model": MODEL_PATH, "classes": 9, "status": "running"}
 
 
 @app.get("/health")
