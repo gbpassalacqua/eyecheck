@@ -99,37 +99,46 @@ def run_inference(image_bytes: bytes) -> dict:
         "urgency": top_class["urgency"],
         "recommendation": generate_recommendation(top_class["name"], confidence),
         "model": "MobileNetV2-TFLite",
-        "description": f"TFLite inference: {top_class['name']} ({confidence*100:.1f}% confidence)"
+        "description": f"Inferência ML: {CLASS_PT.get(top_class['name'], top_class['name'])} ({confidence*100:.1f}% de confiança)"
     }
 
 
 def generate_findings(cls: str, conf: float, scores: dict) -> list:
     findings_map = {
-        "Normal":         ["Sclera appears clear", "No visible abnormalities detected", "Pupils appear symmetric"],
-        "Cataract":       ["Lens opacity or cloudiness detected", "Pupil area shows reduced clarity", "Possible visual impairment indicator"],
-        "Conjunctivitis": ["Conjunctival redness detected", "Possible inflammation of conjunctiva", "Monitor for discharge or tearing"],
-        "Hemorrhage":     ["Subconjunctival hemorrhage detected", "Blood visible in scleral area", "May indicate vascular issue"],
-        "Jaundice":       ["Scleral yellowing detected", "Possible elevated bilirubin", "Systemic evaluation recommended"],
-        "Pterygium":      ["Tissue growth on conjunctiva detected", "Growth extending toward cornea", "UV protection recommended"],
-        "Ptosis":         ["Eyelid drooping detected", "Asymmetric lid positioning", "Neurological evaluation may be needed"],
-        "Stye/Chalazion": ["Eyelid nodule or swelling detected", "Possible glandular inflammation", "Warm compress recommended"],
-        "Uveitis":        ["Deep ocular redness detected", "Possible uveal inflammation", "Prompt ophthalmologic evaluation needed"],
+        "Normal":         ["Esclera aparenta estar limpa", "Sem anormalidades visíveis detectadas", "Pupilas aparentam simétricas"],
+        "Cataract":       ["Opacidade ou turvação do cristalino detectada", "Área pupilar com claridade reduzida", "Possível indicador de comprometimento visual"],
+        "Conjunctivitis": ["Vermelhidão conjuntival detectada", "Possível inflamação da conjuntiva", "Monitorar secreção ou lacrimejamento"],
+        "Hemorrhage":     ["Hemorragia subconjuntival detectada", "Sangue visível na área escleral", "Pode indicar problema vascular"],
+        "Jaundice":       ["Amarelamento da esclera detectado", "Possível elevação de bilirrubina", "Avaliação sistêmica recomendada"],
+        "Pterygium":      ["Crescimento de tecido na conjuntiva detectado", "Crescimento se estendendo em direção à córnea", "Proteção UV recomendada"],
+        "Ptosis":         ["Queda da pálpebra detectada", "Posicionamento assimétrico das pálpebras", "Avaliação neurológica pode ser necessária"],
+        "Stye/Chalazion": ["Nódulo ou inchaço na pálpebra detectado", "Possível inflamação glandular", "Compressa morna recomendada"],
+        "Uveitis":        ["Vermelhidão ocular profunda detectada", "Possível inflamação da úvea", "Avaliação oftalmológica urgente necessária"],
     }
-    base = findings_map.get(cls, ["Analysis complete"])
+    base = findings_map.get(cls, ["Análise concluída"])
     if conf < 0.5:
-        base.append(f"Low confidence ({conf*100:.0f}%) — recommend professional evaluation")
+        base.append(f"Confiança baixa ({conf*100:.0f}%) — recomenda-se avaliação profissional")
     return base
 
 
+# Portuguese class name mapping for descriptions
+CLASS_PT = {
+    "Normal": "Normal", "Cataract": "Catarata", "Conjunctivitis": "Conjuntivite",
+    "Hemorrhage": "Hemorragia", "Jaundice": "Icterícia", "Pterygium": "Pterígio",
+    "Ptosis": "Ptose", "Stye/Chalazion": "Terçol/Calázio", "Uveitis": "Uveíte",
+}
+
+
 def generate_recommendation(cls: str, conf: float) -> str:
+    pt = CLASS_PT.get(cls, cls)
     if cls == "Normal" and conf > 0.7:
-        return "No immediate concerns. Continue regular eye check-ups."
+        return "Sem preocupações imediatas. Continue com exames oftalmológicos regulares."
     elif cls == "Normal":
-        return "Appears normal but low confidence. Consider professional evaluation if symptoms present."
+        return "Aparenta normal, mas com baixa confiança. Considere avaliação profissional se houver sintomas."
     elif conf > 0.6:
-        return f"{cls} detected with good confidence. Consult an ophthalmologist for proper evaluation."
+        return f"{pt} detectado(a) com boa confiança. Consulte um oftalmologista para avaliação adequada."
     else:
-        return f"Possible {cls} detected. Professional evaluation recommended for definitive diagnosis."
+        return f"Possível {pt} detectado(a). Avaliação profissional recomendada para diagnóstico definitivo."
 
 
 @app.get("/", response_class=HTMLResponse)
