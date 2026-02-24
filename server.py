@@ -97,6 +97,7 @@ def run_inference(image_bytes: bytes) -> dict:
         normal_idx = next(i for i, c in enumerate(CLASSES) if c["name"] == "Normal")
         normal_class = CLASSES[normal_idx]
         normal_score = float(output[normal_idx])
+        normal_info = CLASS_INFO.get("Normal", {})
 
         findings = [
             "Nenhuma condição detectada com confiança suficiente",
@@ -110,6 +111,9 @@ def run_inference(image_bytes: bytes) -> dict:
             "confidence": round(normal_score, 4),
             "scores": scores,
             "findings": findings,
+            "explanation": normal_info.get("explanation", ""),
+            "severity": normal_info.get("severity", ""),
+            "severity_level": normal_info.get("severity_level", "none"),
             "systemic_alert": None,
             "urgency": "none",
             "recommendation": "Nenhuma condição identificada com certeza. Se houver sintomas, consulte um oftalmologista.",
@@ -119,12 +123,16 @@ def run_inference(image_bytes: bytes) -> dict:
 
     # Clinical findings based on classification
     findings = generate_findings(top_class["name"], confidence, scores)
+    info = CLASS_INFO.get(top_class["name"], {})
 
     return {
         "classification": top_class["name"],
         "confidence": round(confidence, 4),
         "scores": scores,
         "findings": findings,
+        "explanation": info.get("explanation", ""),
+        "severity": info.get("severity", ""),
+        "severity_level": info.get("severity_level", "none"),
         "systemic_alert": top_class["systemic"] if confidence > 0.5 else None,
         "urgency": top_class["urgency"],
         "recommendation": generate_recommendation(top_class["name"], confidence),
@@ -156,6 +164,55 @@ CLASS_PT = {
     "Normal": "Normal", "Cataract": "Catarata", "Conjunctivitis": "Conjuntivite",
     "Hemorrhage": "Hemorragia", "Jaundice": "Icterícia", "Pterygium": "Pterígio",
     "Ptosis": "Ptose", "Stye/Chalazion": "Terçol/Calázio", "Uveitis": "Uveíte",
+}
+
+# Explanation of each condition in plain language + severity level
+CLASS_INFO = {
+    "Normal": {
+        "explanation": "Seus olhos aparentam estar saudáveis. Nenhuma alteração visível foi detectada.",
+        "severity": "Nenhuma preocupação",
+        "severity_level": "none",
+    },
+    "Cataract": {
+        "explanation": "Catarata é uma opacidade do cristalino (lente natural do olho). É muito comum com o envelhecimento e tem tratamento simples com cirurgia. Não é uma emergência.",
+        "severity": "Gravidade baixa a moderada — tratável",
+        "severity_level": "moderate",
+    },
+    "Conjunctivitis": {
+        "explanation": "Conjuntivite é uma inflamação da membrana que reveste o olho. Geralmente é causada por vírus, bactéria ou alergia. Na maioria dos casos melhora sozinha ou com colírios simples. Não é grave.",
+        "severity": "Gravidade baixa — geralmente resolve sozinha",
+        "severity_level": "low",
+    },
+    "Hemorrhage": {
+        "explanation": "Hemorragia subconjuntival é um derramamento de sangue na parte branca do olho. Parece assustador, mas geralmente é inofensivo e desaparece sozinho em 1-2 semanas, como um 'roxo' no olho.",
+        "severity": "Gravidade baixa — geralmente inofensivo",
+        "severity_level": "low",
+    },
+    "Jaundice": {
+        "explanation": "Icterícia ocular é o amarelamento da parte branca do olho. Pode indicar alteração no fígado. Recomenda-se avaliação médica para investigar a causa.",
+        "severity": "Gravidade moderada a alta — procure avaliação médica",
+        "severity_level": "high",
+    },
+    "Pterygium": {
+        "explanation": "Pterígio é um crescimento benigno (não canceroso) de tecido na superfície do olho. É comum em quem se expõe muito ao sol. Na maioria dos casos não requer tratamento, apenas proteção solar com óculos.",
+        "severity": "Gravidade baixa — condição benigna",
+        "severity_level": "low",
+    },
+    "Ptosis": {
+        "explanation": "Ptose é a queda da pálpebra superior. Pode ser algo simples (cansaço, envelhecimento) ou, em casos raros, indicar uma condição neurológica. Recomenda-se avaliação se for persistente.",
+        "severity": "Gravidade variável — avaliação recomendada se persistente",
+        "severity_level": "moderate",
+    },
+    "Stye/Chalazion": {
+        "explanation": "Terçol ou calázio é um nódulo na pálpebra causado por inflamação de uma glândula. É muito comum e geralmente não é grave. Compressas mornas ajudam. Se persistir por semanas, consulte um médico.",
+        "severity": "Gravidade baixa — muito comum e tratável",
+        "severity_level": "low",
+    },
+    "Uveitis": {
+        "explanation": "Uveíte é uma inflamação dentro do olho. Pode causar vermelhidão, dor e sensibilidade à luz. É tratável com colírios anti-inflamatórios. Recomenda-se consulta com oftalmologista.",
+        "severity": "Gravidade moderada — tratável com acompanhamento",
+        "severity_level": "moderate",
+    },
 }
 
 

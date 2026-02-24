@@ -253,6 +253,19 @@ function App() {
                     </div>
                   </div>
 
+                  {res.explanation && (
+                    <div style={{ background: "rgba(255,255,255,.04)", border: cardBd, borderRadius: 12, padding: 13, marginBottom: 12 }}>
+                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 5, letterSpacing: 1 }}>O QUE É ISSO?</div>
+                      <div style={{ fontSize: 12, color: "#e2e8f0", lineHeight: 1.6 }}>{res.explanation}</div>
+                      {res.severity && (
+                        <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 7 }}>
+                          <span style={{ fontSize: 14 }}>{res.severity_level === "none" ? "✅" : res.severity_level === "low" ? "💚" : res.severity_level === "moderate" ? "🟡" : "🟠"}</span>
+                          <span style={{ fontSize: 11, fontWeight: 600, color: res.severity_level === "none" ? "#22c55e" : res.severity_level === "low" ? "#22c55e" : res.severity_level === "moderate" ? "#eab308" : "#f97316" }}>{res.severity}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   {gc(res.classification).u > 0 && (() => { const u = UL[gc(res.classification).u]; return (
                     <div style={{ background: u.c + "12", border: "1px solid " + u.c + "30", borderRadius: 10, padding: "9px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
                       <span style={{ fontSize: 15 }}>{u.i}</span>
