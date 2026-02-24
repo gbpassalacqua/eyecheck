@@ -167,50 +167,51 @@ CLASS_PT = {
 }
 
 # Explanation of each condition in plain language + severity level
+# NOTE: Explanations must NOT include recommendations (there's a separate field for that)
 CLASS_INFO = {
     "Normal": {
-        "explanation": "Seus olhos aparentam estar saudáveis. Nenhuma alteração visível foi detectada.",
+        "explanation": "Seus olhos aparentam estar saudáveis. Nenhuma alteração visível foi detectada pela IA.",
         "severity": "Nenhuma preocupação",
         "severity_level": "none",
     },
     "Cataract": {
-        "explanation": "Catarata é uma opacidade do cristalino (lente natural do olho). É muito comum com o envelhecimento e tem tratamento simples com cirurgia. Não é uma emergência.",
-        "severity": "Gravidade baixa a moderada — tratável",
+        "explanation": "Catarata é quando o cristalino (a lente natural do olho) fica opaco. É muito comum com a idade e tem tratamento simples. Não é uma emergência.",
+        "severity": "Não é grave — tem tratamento",
         "severity_level": "moderate",
     },
     "Conjunctivitis": {
-        "explanation": "Conjuntivite é uma inflamação da membrana que reveste o olho. Geralmente é causada por vírus, bactéria ou alergia. Na maioria dos casos melhora sozinha ou com colírios simples. Não é grave.",
-        "severity": "Gravidade baixa — geralmente resolve sozinha",
+        "explanation": "Conjuntivite é uma inflamação que deixa o olho vermelho. Pode ser causada por vírus, bactéria ou alergia. Na maioria dos casos melhora sozinha ou com colírios simples.",
+        "severity": "Não é grave — geralmente resolve sozinha",
         "severity_level": "low",
     },
     "Hemorrhage": {
-        "explanation": "Hemorragia subconjuntival é um derramamento de sangue na parte branca do olho. Parece assustador, mas geralmente é inofensivo e desaparece sozinho em 1-2 semanas, como um 'roxo' no olho.",
-        "severity": "Gravidade baixa — geralmente inofensivo",
+        "explanation": "É um pequeno derramamento de sangue na parte branca do olho. Parece assustador, mas é inofensivo e desaparece sozinho em 1 a 2 semanas. É como um roxo na pele.",
+        "severity": "Não é grave — desaparece sozinho",
         "severity_level": "low",
     },
     "Jaundice": {
-        "explanation": "Icterícia ocular é o amarelamento da parte branca do olho. Pode indicar alteração no fígado. Recomenda-se avaliação médica para investigar a causa.",
-        "severity": "Gravidade moderada a alta — procure avaliação médica",
+        "explanation": "Icterícia é o amarelamento da parte branca do olho. Pode estar relacionado ao fígado. Vale a pena fazer exames para investigar.",
+        "severity": "Atenção — vale investigar com exames",
         "severity_level": "high",
     },
     "Pterygium": {
-        "explanation": "Pterígio é um crescimento benigno (não canceroso) de tecido na superfície do olho. É comum em quem se expõe muito ao sol. Na maioria dos casos não requer tratamento, apenas proteção solar com óculos.",
-        "severity": "Gravidade baixa — condição benigna",
+        "explanation": "Pterígio é um crescimento benigno (não é câncer) na superfície do olho. É comum em quem pega muito sol. Na maioria dos casos basta usar óculos de sol para proteger.",
+        "severity": "Não é grave — condição benigna",
         "severity_level": "low",
     },
     "Ptosis": {
-        "explanation": "Ptose é a queda da pálpebra superior. Pode ser algo simples (cansaço, envelhecimento) ou, em casos raros, indicar uma condição neurológica. Recomenda-se avaliação se for persistente.",
-        "severity": "Gravidade variável — avaliação recomendada se persistente",
+        "explanation": "Ptose é quando a pálpebra superior fica mais caída que o normal. Pode ser por cansaço, idade, ou em casos raros algo neurológico. Se for persistente, vale avaliar.",
+        "severity": "Geralmente não é grave — observar se persistir",
         "severity_level": "moderate",
     },
     "Stye/Chalazion": {
-        "explanation": "Terçol ou calázio é um nódulo na pálpebra causado por inflamação de uma glândula. É muito comum e geralmente não é grave. Compressas mornas ajudam. Se persistir por semanas, consulte um médico.",
-        "severity": "Gravidade baixa — muito comum e tratável",
+        "explanation": "Terçol ou calázio é um carocinho na pálpebra causado por uma glândula inflamada. É muito comum e não é grave. Compressas mornas ajudam a resolver.",
+        "severity": "Não é grave — muito comum e tratável",
         "severity_level": "low",
     },
     "Uveitis": {
-        "explanation": "Uveíte é uma inflamação dentro do olho. Pode causar vermelhidão, dor e sensibilidade à luz. É tratável com colírios anti-inflamatórios. Recomenda-se consulta com oftalmologista.",
-        "severity": "Gravidade moderada — tratável com acompanhamento",
+        "explanation": "Uveíte é uma inflamação dentro do olho que pode causar vermelhidão e sensibilidade à luz. É tratável com colírios anti-inflamatórios e tem bom prognóstico.",
+        "severity": "Tratável — colírios resolvem na maioria dos casos",
         "severity_level": "moderate",
     },
 }
