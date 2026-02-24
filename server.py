@@ -70,6 +70,9 @@ def preprocess(image_bytes: bytes) -> np.ndarray:
     return np.expand_dims(arr, axis=0)
 
 
+CONFIDENCE_THRESHOLD = 0.50  # Minimum confidence to report a condition
+
+
 def run_inference(image_bytes: bytes) -> dict:
     """Run TFLite inference and return structured result"""
     tensor = preprocess(image_bytes)
@@ -87,6 +90,33 @@ def run_inference(image_bytes: bytes) -> dict:
     top_class = CLASSES[top_idx]
     confidence = float(output[top_idx])
 
+    # If confidence is below threshold and it's NOT already Normal,
+    # override to Normal — low confidence should not alarm the user
+    if confidence < CONFIDENCE_THRESHOLD and top_class["name"] != "Normal":
+        # Find Normal class index
+        normal_idx = next(i for i, c in enumerate(CLASSES) if c["name"] == "Normal")
+        normal_class = CLASSES[normal_idx]
+        normal_score = float(output[normal_idx])
+
+        findings = [
+            "Nenhuma condição detectada com confiança suficiente",
+            "Aparência geral dentro da normalidade",
+            f"Maior suspeita: {CLASS_PT.get(top_class['name'], top_class['name'])} ({confidence*100:.0f}%), abaixo do limiar mínimo",
+            "Caso tenha sintomas, procure avaliação profissional",
+        ]
+
+        return {
+            "classification": "Normal",
+            "confidence": round(normal_score, 4),
+            "scores": scores,
+            "findings": findings,
+            "systemic_alert": None,
+            "urgency": "none",
+            "recommendation": "Nenhuma condição identificada com certeza. Se houver sintomas, consulte um oftalmologista.",
+            "model": "MobileNetV2-TFLite",
+            "description": f"Nenhuma condição detectada com confiança acima de {int(CONFIDENCE_THRESHOLD*100)}%. Aparenta normal."
+        }
+
     # Clinical findings based on classification
     findings = generate_findings(top_class["name"], confidence, scores)
 
@@ -95,7 +125,7 @@ def run_inference(image_bytes: bytes) -> dict:
         "confidence": round(confidence, 4),
         "scores": scores,
         "findings": findings,
-        "systemic_alert": top_class["systemic"] if confidence > 0.3 else None,
+        "systemic_alert": top_class["systemic"] if confidence > 0.5 else None,
         "urgency": top_class["urgency"],
         "recommendation": generate_recommendation(top_class["name"], confidence),
         "model": "MobileNetV2-TFLite",
