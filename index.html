@@ -4,12 +4,12 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>EYECHECK — Seu olho conta a saúde do seu corpo</title>
-  <meta property="og:title" content="EYECHECK — Screening Ocular + Sistêmico por IA"/>
-  <meta property="og:description" content="Detecta doenças oculares e sinais de doenças sistêmicas (diabetes, anemia, tireoide, colesterol) só com uma foto do olho. 2 modelos de IA, 18 condições."/>
+  <meta property="og:title" content="EYECHECK — Screening Neural por IA"/>
+  <meta property="og:description" content="IA analisa 18 condições de saúde pelo seu olho. Doenças oculares e sistêmicas detectadas com Machine Learning."/>
   <meta property="og:type" content="website"/>
-  <meta property="og:image" content="https://em-content.zobj.net/source/apple/391/eyes_1f440.png"/>
-  <meta name="description" content="EYECHECK — IA que analisa seus olhos e detecta sinais de doenças. 2 modelos, 18 condições, MobileNetV2."/>
-  <meta name="theme-color" content="#0a0e1a"/>
+  <meta property="og:image" content="/static/hero-eye.jpg"/>
+  <meta name="description" content="EYECHECK — IA neural que analisa seus olhos e detecta sinais de doenças oculares e sistêmicas."/>
+  <meta name="theme-color" content="#030b14"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>"/>
@@ -17,410 +17,453 @@
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
   <style>
+    :root{--bg:#030b14;--bg2:#0a1628;--bg3:#0d2137;--bg4:#132d47;--acc:#00d4aa;--accg:#00ffcc;--accd:#007a63;--blu:#0ea5e9;--blug:#38bdf8;--un:#00d4aa;--ul:#84cc16;--um:#f59e0b;--uh:#ef4444;--uhg:#ff0040;--t1:#f0f6fc;--t2:#8b9dc3;--t3:#4a5d7a;--glass:rgba(13,33,55,0.72);--gb:rgba(0,212,170,0.12);--gbh:rgba(0,212,170,0.25);--fd:'Orbitron',sans-serif;--fb:'Outfit',sans-serif;--fm:'JetBrains Mono',monospace}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#051520;background-image:url('/static/bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;overflow-x:hidden}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    @keyframes scan{0%{top:0}100%{top:100%}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
-    @keyframes slideInR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.2)}50%{box-shadow:0 0 40px rgba(34,197,94,.4)}}
-    @keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
-    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-    .bf{transition:width 1.2s cubic-bezier(.22,1,.36,1)}
-    .btn{transition:all .2s;cursor:pointer}.btn:hover{transform:scale(1.03)}
-    .hero-img{border-radius:50%;width:140px;height:140px;object-fit:cover;border:3px solid rgba(34,197,94,.4);box-shadow:0 0 40px rgba(34,197,94,.3),0 0 80px rgba(6,182,212,.15);animation:float 4s ease-in-out infinite}
-    @media(max-width:700px){.dual{flex-direction:column !important}.hero-img{width:110px;height:110px}}
+    body{background:var(--bg);background-image:url('/static/bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;font-family:var(--fb);color:var(--t1);overflow-x:hidden}
+    body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,11,20,.88) 0%,rgba(10,22,40,.72) 50%,rgba(3,11,20,.92) 100%);pointer-events:none;z-index:0}
+    #root{position:relative;z-index:1}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes spinR{to{transform:rotate(-360deg)}}
+    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+    @keyframes eyeGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,170,.25),0 0 40px rgba(0,212,170,.1)}50%{box-shadow:0 0 35px rgba(0,212,170,.5),0 0 70px rgba(0,212,170,.2),0 0 120px rgba(0,212,170,.08)}}
+    @keyframes heroScan{0%{top:5%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:95%;opacity:0}}
+    @keyframes scanLine{0%{top:-2px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% + 2px);opacity:0}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+    @keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+    @keyframes barFill{from{width:0%}}
+    @keyframes logoGlow{0%,100%{box-shadow:0 0 8px rgba(0,212,170,.2)}50%{box-shadow:0 0 18px rgba(0,212,170,.5),0 0 35px rgba(0,212,170,.15)}}
+    @keyframes urgPulse{0%,100%{box-shadow:inset 0 0 0 1px rgba(239,68,68,.3),0 0 15px rgba(239,68,68,.1)}50%{box-shadow:inset 0 0 0 1px rgba(239,68,68,.6),0 0 30px rgba(239,68,68,.2)}}
+    @keyframes marchDash{to{stroke-dashoffset:-16}}
+    @keyframes stagger{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes drift{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.25}90%{opacity:.25}100%{transform:translateY(-100vh) translateX(25px);opacity:0}}
+    @keyframes checkDraw{to{stroke-dashoffset:0}}
+    .bf{transition:width 1.5s cubic-bezier(.22,1,.36,1)}
+    .btn{transition:all .25s;cursor:pointer}.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
+    .glass{background:var(--glass);border:1px solid var(--gb);border-radius:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+    .glass:hover{border-color:var(--gbh)}
+    .eye-w{position:relative;width:190px;height:190px;margin:0 auto;animation:breathe 4s ease-in-out infinite}
+    .eye-w img{width:174px;height:174px;border-radius:50%;object-fit:cover;position:absolute;top:8px;left:8px;z-index:2;animation:eyeGlow 3s ease-in-out infinite}
+    .eye-r1{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--acc);border-right-color:rgba(0,212,170,.25);animation:spin 2.5s linear infinite;z-index:1}
+    .eye-r2{position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;border-bottom-color:rgba(0,255,204,.15);border-left-color:rgba(0,255,204,.08);animation:spinR 4s linear infinite;z-index:1}
+    .eye-sc{position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--accg),transparent);z-index:3;animation:heroScan 3s ease-in-out infinite;pointer-events:none;box-shadow:0 0 8px var(--acc)}
+    .sb{position:absolute;width:22px;height:22px;border-color:var(--acc);border-style:solid;border-width:0;z-index:11}
+    .sb-tl{top:8px;left:8px;border-top-width:2px;border-left-width:2px}
+    .sb-tr{top:8px;right:8px;border-top-width:2px;border-right-width:2px}
+    .sb-bl{bottom:8px;left:8px;border-bottom-width:2px;border-left-width:2px}
+    .sb-br{bottom:8px;right:8px;border-bottom-width:2px;border-right-width:2px}
+    .s-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,var(--accg) 30%,var(--accg) 70%,transparent 100%);box-shadow:0 0 12px var(--acc),0 0 25px rgba(0,255,204,.25);animation:scanLine 2s ease-in-out infinite;z-index:12}
+    .particle{position:fixed;border-radius:50%;pointer-events:none;z-index:0;background:var(--acc)}
+    @media(max-width:700px){.dual{flex-direction:column !important}.eye-w{width:150px;height:150px}.eye-w img{width:136px;height:136px;top:7px;left:7px}}
   </style>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
-const { useState, useRef, useCallback } = React;
+const {useState,useRef,useCallback} = React;
 
-// V2 Ocular class metadata
-const V2 = [
-  { k:"normal",         c:"#22c55e", i:"✅", d:"Olho saudável" },
-  { k:"cataract",       c:"#a78bfa", i:"⚪", d:"Opacidade do cristalino" },
-  { k:"conjunctivitis", c:"#ef4444", i:"🔴", d:"Olho vermelho, inflamação" },
-  { k:"hemorrhage",     c:"#dc2626", i:"🩸", d:"Vaso rompido na esclera" },
-  { k:"jaundice",       c:"#eab308", i:"🟡", d:"Esclera amarelada (fígado)" },
-  { k:"pterygium",      c:"#f97316", i:"🔺", d:"Crescimento na conjuntiva" },
-  { k:"ptosis",         c:"#3b82f6", i:"👁️", d:"Pálpebra caída" },
-  { k:"stye_chalazion", c:"#ec4899", i:"🫧", d:"Terçol/calázio" },
-  { k:"uveitis",        c:"#f59e0b", i:"🟠", d:"Inflamação intraocular" },
+const urgC = u => u==="high"?"#ef4444":u==="moderate"?"#f59e0b":u==="low"?"#84cc16":"#00d4aa";
+const urgL = u => u==="high"?"ALTA":u==="moderate"?"MODERADA":u==="low"?"BAIXA":"NENHUMA";
+const urgI = u => u==="high"?"🔴":u==="moderate"?"🟡":u==="low"?"🟢":"✅";
+const sevI = l => l==="none"?"✅":l==="low"?"💚":l==="moderate"?"🟡":"🟠";
+const sevC = l => l==="none"||l==="low"?"#00d4aa":l==="moderate"?"#f59e0b":"#ef4444";
+
+// Disease grid display
+const GRID_OC = [
+  {i:"⚪",n:"Catarata",c:"#a78bfa"},{i:"🔴",n:"Conjuntivite",c:"#ef4444"},{i:"🩸",n:"Hemorragia",c:"#dc2626"},
+  {i:"🟡",n:"Icterícia",c:"#eab308"},{i:"🔺",n:"Pterígio",c:"#f97316"},{i:"👁️",n:"Ptose",c:"#3b82f6"},
+  {i:"🫧",n:"Terçol",c:"#ec4899"},{i:"🟠",n:"Uveíte",c:"#f59e0b"},
+];
+const GRID_SY = [
+  {i:"🩸",n:"Anemia",c:"#f87171"},{i:"⭕",n:"Arco Senil",c:"#94a3b8"},{i:"🔵",n:"Esclera Azul",c:"#60a5fa"},
+  {i:"💜",n:"Diabetes",c:"#a78bfa"},{i:"👀",n:"Tireoide",c:"#fb923c"},{i:"🟤",n:"Wilson",c:"#d97706"},
+  {i:"💧",n:"Renal",c:"#2dd4bf"},{i:"🟡",n:"Colesterol",c:"#fbbf24"},
 ];
 
-// V3 Systemic class metadata
-const V3 = [
-  { k:"normal",            c:"#22c55e", i:"✅", d:"Sem sinais sistêmicos" },
-  { k:"anemia",            c:"#f87171", i:"🩸", d:"Anemia — conjuntiva pálida" },
-  { k:"arcus_senilis",     c:"#94a3b8", i:"⭕", d:"Arco senil — colesterol" },
-  { k:"blue_sclera",       c:"#60a5fa", i:"🔵", d:"Esclera azulada" },
-  { k:"diabetic_eye",      c:"#a78bfa", i:"💜", d:"Sinais de diabetes" },
-  { k:"exophthalmos",      c:"#fb923c", i:"👀", d:"Olhos saltados — tireoide" },
-  { k:"kayser_fleischer",  c:"#d97706", i:"🟤", d:"Anel de cobre — Wilson" },
-  { k:"periorbital_edema", c:"#2dd4bf", i:"💧", d:"Inchaço periorbital — renal" },
-  { k:"xanthelasma",       c:"#fbbf24", i:"🟡", d:"Placas na pálpebra — colesterol" },
-];
+const WA = s => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>;
 
-const gv2 = (k) => V2.find(c => c.k === k) || V2[0];
-const gv3 = (k) => V3.find(c => c.k === k) || V3[0];
-const mono = "'Space Mono', monospace";
-const cardBg = "rgba(255,255,255,0.03)";
-const cardBd = "1px solid rgba(255,255,255,0.06)";
+function App(){
+  const [img,setImg]=useState(null);
+  const [b64,setB64]=useState(null);
+  const [res,setRes]=useState(null);
+  const [busy,setBusy]=useState(false);
+  const [err,setErr]=useState(null);
+  const [drag,setDrag]=useState(false);
+  const [apiReady,setApiReady]=useState(false);
+  const [minScan,setMinScan]=useState(false);
+  const fRef=useRef(null);
+  const url=typeof window!=="undefined"?window.location.href:"";
 
-const urgColor = (u) => u === "high" ? "#ef4444" : u === "moderate" ? "#eab308" : u === "low" ? "#a3e635" : "#22c55e";
-const urgLabel = (u) => u === "high" ? "ALTA" : u === "moderate" ? "MODERADA" : u === "low" ? "BAIXA" : "NENHUMA";
-const urgIcon  = (u) => u === "high" ? "🔴" : u === "moderate" ? "🟡" : u === "low" ? "🟢" : "✅";
-const sevIcon  = (l) => l === "none" ? "✅" : l === "low" ? "💚" : l === "moderate" ? "🟡" : "🟠";
-const sevColor = (l) => l === "none" || l === "low" ? "#22c55e" : l === "moderate" ? "#eab308" : "#f97316";
-
-const WA = (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>;
-
-function App() {
-  const [img, setImg] = useState(null);
-  const [b64, setB64] = useState(null);
-  const [res, setRes] = useState(null);
-  const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState(null);
-  const [drag, setDrag] = useState(false);
-  const [apiReady, setApiReady] = useState(false);
-  const fRef = useRef(null);
-  const appUrl = typeof window !== "undefined" ? window.location.href : "";
-
-  // Auto-wake server on page load (free tier cold start)
-  React.useEffect(() => {
-    const wake = () => fetch("/health").then(r => { if (r.ok) setApiReady(true); }).catch(() => {
-      setTimeout(wake, 3000);
-    });
+  React.useEffect(()=>{
+    const wake=()=>fetch("/health").then(r=>{if(r.ok)setApiReady(true)}).catch(()=>setTimeout(wake,3000));
     wake();
-  }, []);
+  },[]);
 
-  const load = useCallback((file) => {
-    if (!file?.type.startsWith("image/")) return;
-    setRes(null); setErr(null);
-    const reader = new FileReader();
-    reader.onload = () => setB64(reader.result.split(",")[1]);
+  const load=useCallback(file=>{
+    if(!file?.type.startsWith("image/"))return;
+    setRes(null);setErr(null);
+    const reader=new FileReader();
+    reader.onload=()=>setB64(reader.result.split(",")[1]);
     reader.readAsDataURL(file);
-    createImageBitmap(file).then(bmp => {
-      const s = Math.min(1, 600 / Math.max(bmp.width, bmp.height));
-      const w = Math.round(bmp.width * s), h = Math.round(bmp.height * s);
-      const cv = document.createElement("canvas");
-      cv.width = w; cv.height = h;
-      cv.getContext("2d").drawImage(bmp, 0, 0, w, h);
-      bmp.close();
-      setImg(cv.toDataURL("image/jpeg", 0.75));
-    }).catch(() => setImg("ok"));
-  }, []);
+    createImageBitmap(file).then(bmp=>{
+      const s=Math.min(1,600/Math.max(bmp.width,bmp.height));
+      const w=Math.round(bmp.width*s),h=Math.round(bmp.height*s);
+      const cv=document.createElement("canvas");
+      cv.width=w;cv.height=h;cv.getContext("2d").drawImage(bmp,0,0,w,h);bmp.close();
+      setImg(cv.toDataURL("image/jpeg",0.75));
+    }).catch(()=>setImg("ok"));
+  },[]);
 
-  const analyze = async () => {
-    if (!b64) return;
-    setBusy(true); setErr(null); setRes(null);
-    try {
-      const r = await fetch("/predict/full", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: b64 })
-      });
-      const parsed = await r.json();
-      if (parsed.error) throw new Error(parsed.error);
-      setRes(parsed);
-    } catch (e) { setErr("Erro: " + e.message); }
-    finally { setBusy(false); }
+  const analyze=async()=>{
+    if(!b64)return;
+    setBusy(true);setErr(null);setRes(null);setMinScan(true);
+    setTimeout(()=>setMinScan(false),2500); // minimum scan animation
+    try{
+      const r=await fetch("/predict/full",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:b64})});
+      const d=await r.json();if(d.error)throw new Error(d.error);
+      // Wait for minimum scan time
+      const waitForScan=()=>{
+        setRes(d);setBusy(false);
+      };
+      if(document.querySelector('[data-minscan]'))setTimeout(waitForScan,800);
+      else waitForScan();
+    }catch(e){setErr("Erro: "+e.message);setBusy(false)}
   };
 
-  const reset = () => { setImg(null); setB64(null); setRes(null); setErr(null); };
+  const reset=()=>{setImg(null);setB64(null);setRes(null);setErr(null)};
 
-  const shareApp = () => {
-    const msg = "👁️ EYECHECK — IA que analisa seus olhos e detecta sinais de doenças (diabetes, anemia, colesterol, tireoide) só com uma foto!\n\n🔬 2 modelos de IA, 18 condições detectadas\n📱 Funciona no celular, é só tirar foto\n\nTesta aí: " + appUrl;
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
+  const shareApp=()=>{
+    const msg="👁️ EYECHECK — IA Neural que analisa seus olhos e detecta sinais de doenças (diabetes, anemia, colesterol, tireoide) só com uma foto!\n\n🔬 18 condições detectadas com Machine Learning\n📱 Funciona no celular\n\nTesta aí: "+url;
+    window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(msg),"_blank");
   };
 
-  const shareResult = () => {
-    if (!res) return;
-    const oc = res.ocular_analysis;
-    const sy = res.systemic_analysis;
-    const msg = "👁️ Fiz um screening com EYECHECK!\n\n🔍 Olho: " + (oc?.top_prediction_pt || "?") + " (" + Math.round((oc?.confidence||0)*100) + "%)\n🫀 Corpo: " + (sy?.top_prediction_pt || "?") + " (" + Math.round((sy?.confidence||0)*100) + "%)\n⚠️ Urgência: " + urgLabel(res.combined_urgency) + "\n\n📱 Faça o seu: " + appUrl;
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
+  const shareResult=()=>{
+    if(!res)return;
+    const p=getPrimary();
+    const msg="👁️ Fiz um screening com EYECHECK!\n\n🔬 Resultado: "+(p?.top_prediction_pt||"Normal")+" ("+Math.round((p?.confidence||0)*100)+"%)\n⚠️ Urgência: "+urgL(res.combined_urgency)+"\n\n📱 Faça o seu: "+url;
+    window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(msg),"_blank");
   };
 
-  const bothNormal = res && res.ocular_analysis?.top_prediction === "normal" && res.systemic_analysis?.top_prediction === "normal";
+  // Unified result logic
+  const getPrimary=()=>{
+    if(!res)return null;
+    const oc=res.ocular_analysis,sy=res.systemic_analysis;
+    if(oc.top_prediction==="normal"&&sy.top_prediction==="normal")return oc;
+    const uv={none:0,low:1,moderate:2,high:3};
+    if(oc.top_prediction==="normal")return sy;
+    if(sy.top_prediction==="normal")return oc;
+    if((uv[sy.urgency]||0)>(uv[oc.urgency]||0))return sy;
+    if((uv[oc.urgency]||0)>(uv[sy.urgency]||0))return oc;
+    return sy.confidence>oc.confidence?sy:oc;
+  };
+  const getSecondary=()=>{
+    if(!res)return null;
+    const oc=res.ocular_analysis,sy=res.systemic_analysis;
+    if(oc.top_prediction==="normal"||sy.top_prediction==="normal")return null;
+    const p=getPrimary();
+    return p===oc?sy:oc;
+  };
+  const bothNormal=res&&res.ocular_analysis?.top_prediction==="normal"&&res.systemic_analysis?.top_prediction==="normal";
+  const primary=getPrimary();
+  const secondary=getSecondary();
 
-  // ─── Reusable result card ───
-  const ResultCard = ({ analysis, title, icon, classList, getClass, animClass }) => {
-    if (!analysis) return null;
-    const cls = getClass(analysis.top_prediction);
-    const conf = Math.round((analysis.confidence || 0) * 100);
-    return (
-      <div style={{ flex: 1, animation: animClass + " .6s ease" }}>
-        {/* Card header */}
-        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
-          <span style={{ fontSize: 18 }}>{icon}</span>
-          <span style={{ fontSize: 11, fontFamily: mono, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>{title}</span>
-          <span style={{ marginLeft: "auto", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 6, padding: "2px 8px", fontSize: 8, fontFamily: mono, color: "#64748b" }}>{analysis.model?.split("—")[0]?.trim()}</span>
+  // ─── PARTICLES ───
+  const Particles=()=>(
+    <>{[0,1,2,3,4,5].map(i=>(
+      <div key={i} className="particle" style={{width:i%2===0?2:3,height:i%2===0?2:3,left:(10+i*15)+"%",bottom:"-5%",animation:`drift ${18+i*4}s ${i*3}s linear infinite`,opacity:0}}/>
+    ))}</>
+  );
+
+  return(
+  <div style={{minHeight:"100vh"}}>
+    <Particles/>
+    <input ref={fRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>load(e.target.files?.[0])}/>
+
+    {/* ═══ HEADER ═══ */}
+    <header style={{position:"sticky",top:0,zIndex:50,padding:"12px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid rgba(0,212,170,.08)",background:"rgba(3,11,20,.75)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)"}}>
+      <div style={{display:"flex",alignItems:"center",gap:10}}>
+        <div style={{width:34,height:34,borderRadius:10,background:"linear-gradient(135deg,var(--acc),var(--accd))",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"var(--fd)",fontSize:14,fontWeight:900,color:"#fff",animation:"logoGlow 3s ease-in-out infinite"}}>◉</div>
+        <div>
+          <div style={{fontFamily:"var(--fd)",fontWeight:700,fontSize:14,color:"var(--t1)",letterSpacing:"0.08em"}}>EYECHECK</div>
+          <div style={{fontSize:8,color:"var(--t3)",fontFamily:"var(--fm)",letterSpacing:1}}>V4.0 · NEURAL AI</div>
+        </div>
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
+        <div style={{background:apiReady?"rgba(0,212,170,.1)":"rgba(245,158,11,.1)",border:"1px solid "+(apiReady?"rgba(0,212,170,.25)":"rgba(245,158,11,.25)"),borderRadius:8,padding:"3px 10px",fontSize:9,fontFamily:"var(--fm)",color:apiReady?"var(--acc)":"var(--um)"}}>{apiReady?"● ONLINE":"◌ INICIANDO..."}</div>
+      </div>
+    </header>
+
+    <div style={{borderTop:"1px solid rgba(0,212,170,.15)",background:"linear-gradient(90deg,transparent 5%,rgba(0,212,170,.15) 50%,transparent 95%)",height:1,marginTop:-1}}/>
+
+    <main style={{maxWidth:640,margin:"0 auto",padding:"28px 16px"}}>
+
+    {/* ═══ HOME ═══ */}
+    {!img&&(
+      <div style={{animation:"fadeUp .7s ease"}}>
+        {/* Hero eye */}
+        <div style={{textAlign:"center",marginBottom:28}}>
+          <div className="eye-w" style={{marginBottom:20}}>
+            <div className="eye-r1"/>
+            <div className="eye-r2"/>
+            <img src="/static/hero-eye.jpg" alt="EYECHECK"/>
+            <div className="eye-sc"/>
+          </div>
+          <h1 style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--t1)",letterSpacing:"0.05em",marginBottom:6,textShadow:"0 0 30px rgba(0,212,170,.2)"}}>SEU OLHO CONTA A SAÚDE<br/>DO SEU CORPO</h1>
+          <p style={{color:"var(--t2)",fontSize:13,fontWeight:300}}>IA neural analisa 18 condições de saúde pelo seu olho</p>
         </div>
 
-        {/* Classification */}
-        <div style={{ background: "linear-gradient(135deg," + cls.c + "15," + cls.c + "05)", border: "1px solid " + cls.c + "30", borderRadius: 14, padding: 14, marginBottom: 10 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 28 }}>{cls.i}</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 17, fontWeight: 700, color: cls.c }}>{analysis.top_prediction_pt}</div>
-              <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 1 }}>{cls.d}</div>
+        {/* Upload */}
+        <div onClick={()=>fRef.current?.click()}
+          onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)}
+          onDrop={e=>{e.preventDefault();setDrag(false);load(e.dataTransfer.files[0])}}
+          className="btn glass"
+          style={{borderColor:drag?"var(--acc)":"var(--gb)",padding:"28px 20px",textAlign:"center",marginBottom:20,cursor:"pointer",transition:"all .3s",boxShadow:drag?"0 0 30px rgba(0,212,170,.15)":"none"}}>
+          <div style={{fontSize:32,marginBottom:8,filter:"drop-shadow(0 0 8px rgba(0,212,170,.3))"}}>📸</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:13,fontWeight:500,color:"var(--t1)",letterSpacing:"0.05em",marginBottom:6}}>INICIAR ANÁLISE</div>
+          <div style={{fontSize:12,color:"var(--t2)",fontWeight:300}}>Câmera no celular · Upload de arquivo</div>
+        </div>
+
+        {/* Disease grid */}
+        <div style={{display:"flex",gap:10,marginBottom:16}} className="dual">
+          <div className="glass" style={{flex:1,padding:14}}>
+            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--blu)",marginBottom:8,fontWeight:700,letterSpacing:1}}>🔍 OCULAR · 8 CONDIÇÕES</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+              {GRID_OC.map(d=>(
+                <div key={d.n} style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:8,padding:"4px 8px",fontSize:9,color:d.c,display:"flex",alignItems:"center",gap:4}}>
+                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                </div>
+              ))}
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontFamily: mono, fontSize: 20, fontWeight: 700, color: cls.c }}>{conf}%</div>
-              <div style={{ fontSize: 8, fontFamily: mono, color: urgColor(analysis.urgency) }}>
-                {urgIcon(analysis.urgency)} {urgLabel(analysis.urgency)}
+          </div>
+          <div className="glass" style={{flex:1,padding:14}}>
+            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"#f97316",marginBottom:8,fontWeight:700,letterSpacing:1}}>🫀 SISTÊMICO · 8 CONDIÇÕES</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+              {GRID_SY.map(d=>(
+                <div key={d.n} style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:8,padding:"4px 8px",fontSize:9,color:d.c,display:"flex",alignItems:"center",gap:4}}>
+                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Share */}
+        <button onClick={shareApp} className="btn" style={{width:"100%",padding:"14px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",fontFamily:"var(--fb)",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 4px 24px rgba(37,211,102,.25)"}}>
+          {WA(18)} Enviar pra um amigo
+        </button>
+      </div>
+    )}
+
+    {/* ═══ ANALYSIS ═══ */}
+    {img&&(
+      <div style={{animation:"fadeUp .5s ease"}}>
+        {/* Scanner frame */}
+        <div style={{position:"relative",borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,212,170,.15)",background:"#000",marginBottom:14}}>
+          {img&&img!=="ok"?(
+            <img src={img} alt="Eye" style={{width:"100%",display:"block",maxHeight:320,objectFit:"contain"}}/>
+          ):(
+            <div style={{width:"100%",height:160,display:"flex",alignItems:"center",justifyContent:"center"}}>
+              <span style={{fontSize:11,color:"var(--acc)",fontFamily:"var(--fm)"}}>IMAGEM CARREGADA</span>
+            </div>
+          )}
+          {/* Scanner overlay */}
+          {busy&&(
+            <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.35)"}}>
+              <div className="sb sb-tl"/><div className="sb sb-tr"/><div className="sb sb-bl"/><div className="sb sb-br"/>
+              <div className="s-line"/>
+              <div style={{position:"absolute",bottom:16,left:0,right:0,textAlign:"center"}}>
+                <div style={{display:"inline-block",background:"rgba(3,11,20,.85)",borderRadius:10,padding:"8px 18px",fontFamily:"var(--fm)",fontSize:10,color:"var(--acc)",animation:"pulse 1.5s infinite",letterSpacing:1,border:"1px solid rgba(0,212,170,.2)"}}>
+                  ANALISANDO PADRÕES OCULARES...
+                </div>
               </div>
             </div>
-          </div>
-          <div style={{ marginTop: 8, height: 4, borderRadius: 2, background: "rgba(255,255,255,.1)" }}>
-            <div className="bf" style={{ height: "100%", borderRadius: 2, background: cls.c, width: conf + "%" }} />
-          </div>
+          )}
+          {/* Result badge on image */}
+          {res&&primary&&!bothNormal&&(
+            <div style={{position:"absolute",top:10,right:10,background:urgC(primary.urgency),color:"#fff",borderRadius:8,padding:"4px 10px",fontSize:9,fontWeight:700,fontFamily:"var(--fm)",letterSpacing:.5}}>{primary.top_prediction_pt?.toUpperCase()}</div>
+          )}
         </div>
 
-        {/* Explanation + Severity */}
-        {analysis.explanation && (
-          <div style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 11, marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 4, letterSpacing: 1 }}>O QUE É ISSO?</div>
-            <div style={{ fontSize: 11, color: "#e2e8f0", lineHeight: 1.5 }}>{analysis.explanation}</div>
-            {analysis.severity && (
-              <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 13 }}>{sevIcon(analysis.severity_level)}</span>
-                <span style={{ fontSize: 10, fontWeight: 600, color: sevColor(analysis.severity_level) }}>{analysis.severity}</span>
+        {/* Action buttons */}
+        <div style={{display:"flex",gap:8,marginBottom:16}}>
+          {!busy&&!res&&(
+            <button onClick={apiReady?analyze:undefined} className="btn" style={{flex:1,padding:"13px",borderRadius:12,border:"none",background:apiReady?"linear-gradient(135deg,var(--acc),var(--accd))":"rgba(255,255,255,.08)",color:apiReady?"#000":"var(--t3)",fontFamily:"var(--fd)",fontSize:12,fontWeight:700,letterSpacing:"0.05em",boxShadow:apiReady?"0 4px 24px rgba(0,212,170,.25)":"none",opacity:apiReady?1:.6}}>{apiReady?"ANALISAR":"INICIANDO..."}</button>
+          )}
+          <button onClick={reset} className="btn" style={{flex:res?1:0,minWidth:44,padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,.1)",background:"rgba(255,255,255,.04)",color:"var(--t2)",fontFamily:"var(--fb)",fontSize:12,fontWeight:500}}>{res?"Nova Foto":"✕"}</button>
+          {res&&(
+            <button onClick={shareResult} className="btn" style={{flex:1,padding:"13px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",fontFamily:"var(--fb)",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+              {WA(14)} Compartilhar
+            </button>
+          )}
+        </div>
+
+        {/* ═══ BOTH NORMAL ═══ */}
+        {bothNormal&&(
+          <div className="glass" style={{textAlign:"center",padding:"30px 20px",marginBottom:16,borderColor:"rgba(0,212,170,.3)",animation:"pop .5s ease",boxShadow:"0 0 40px rgba(0,212,170,.1)"}}>
+            <svg width="64" height="64" viewBox="0 0 64 64" style={{margin:"0 auto 12px"}}>
+              <circle cx="32" cy="32" r="28" fill="none" stroke="var(--acc)" strokeWidth="2.5" opacity=".3"/>
+              <path d="M20 32 L28 40 L44 24" fill="none" stroke="var(--acc)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{animation:"checkDraw .8s .3s forwards"}}/>
+            </svg>
+            <div style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--acc)",letterSpacing:"0.08em",marginBottom:6}}>OLHOS SAUDÁVEIS</div>
+            <div style={{fontSize:13,color:"var(--t2)",fontWeight:300}}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
+          </div>
+        )}
+
+        {/* ═══ COMBINED URGENCY ═══ */}
+        {res&&!bothNormal&&(
+          <div style={{marginBottom:14,animation:"slideUp .6s ease"}}>
+            <div className="glass" style={{padding:"12px 16px",display:"flex",alignItems:"center",gap:12,borderColor:urgC(res.combined_urgency)+"40",animation:res.combined_urgency==="high"?"urgPulse 2s infinite":"none"}}>
+              <span style={{fontSize:22}}>{urgI(res.combined_urgency)}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:8,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),letterSpacing:1.5,fontWeight:700}}>URGÊNCIA</div>
+                <div style={{fontSize:14,fontWeight:600,color:urgC(res.combined_urgency)}}>{urgL(res.combined_urgency)}</div>
+              </div>
+              <div style={{background:urgC(res.combined_urgency)+"18",borderRadius:8,padding:"4px 10px",fontSize:9,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),border:"1px solid "+urgC(res.combined_urgency)+"30"}}>{primary?.type==="ocular"?"OCULAR":"SISTÊMICO"}</div>
+            </div>
+          </div>
+        )}
+
+        {/* ═══ PRIMARY DIAGNOSIS ═══ */}
+        {res&&primary&&!bothNormal&&(
+          <div className="glass" style={{padding:18,marginBottom:14,borderColor:urgC(primary.urgency)+"30",animation:"slideUp .7s ease"}}>
+            <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1.5,marginBottom:10}}>● DIAGNÓSTICO PRINCIPAL</div>
+
+            <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
+              <div style={{fontSize:36}}>{primary.type==="systemic"?"🫀":"🔍"}</div>
+              <div style={{flex:1}}>
+                <div style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--t1)",letterSpacing:"0.03em"}}>{primary.top_prediction_pt}</div>
+                <div style={{fontSize:11,color:"var(--t2)",marginTop:2}}>{primary.type==="systemic"?"Análise Sistêmica":"Análise Ocular"}</div>
+              </div>
+              <div style={{fontFamily:"var(--fm)",fontSize:28,fontWeight:700,color:urgC(primary.urgency)}}>{Math.round((primary.confidence||0)*100)}%</div>
+            </div>
+
+            {/* Confidence bar */}
+            <div style={{height:5,borderRadius:3,background:"rgba(255,255,255,.06)",marginBottom:14}}>
+              <div className="bf" style={{height:"100%",borderRadius:3,background:`linear-gradient(90deg,${urgC(primary.urgency)},${urgC(primary.urgency)}aa)`,width:Math.round((primary.confidence||0)*100)+"%",animation:"barFill 1.5s ease",boxShadow:`0 0 10px ${urgC(primary.urgency)}44`}}/>
+            </div>
+
+            {/* Explanation */}
+            {primary.explanation&&(
+              <div style={{background:"rgba(255,255,255,.03)",borderRadius:12,padding:13,marginBottom:12,border:"1px solid rgba(255,255,255,.05)"}}>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,marginBottom:5}}>O QUE É ISSO?</div>
+                <div style={{fontSize:12,color:"var(--t1)",lineHeight:1.6,fontWeight:300}}>{primary.explanation}</div>
+                {primary.severity&&(
+                  <div style={{marginTop:8,display:"flex",alignItems:"center",gap:6}}>
+                    <span style={{fontSize:13}}>{sevI(primary.severity_level)}</span>
+                    <span style={{fontSize:11,fontWeight:500,color:sevC(primary.severity_level)}}>{primary.severity}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Systemic alert */}
+            {primary.systemic_alert&&(
+              <div style={{background:"rgba(249,115,22,.06)",borderRadius:12,padding:12,marginBottom:12,border:"1px solid rgba(249,115,22,.15)"}}>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"#f97316",letterSpacing:1,fontWeight:700,marginBottom:4}}>⚠ SINAL SISTÊMICO</div>
+                <div style={{fontSize:11,color:"#fdba74",lineHeight:1.5}}>
+                  <strong>Doença:</strong> {primary.systemic_alert.disease}<br/>
+                  <strong>Sinal:</strong> {primary.systemic_alert.sign}
+                </div>
+              </div>
+            )}
+
+            {/* Findings */}
+            {primary.findings&&(
+              <div style={{marginBottom:12}}>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,marginBottom:6}}>ACHADOS</div>
+                {primary.findings.map((f,i)=>(
+                  <div key={i} style={{display:"flex",gap:6,marginBottom:3,fontSize:11,color:"var(--t2)",animation:`stagger ${.3+i*.08}s ease both`}}>
+                    <span style={{color:"var(--acc)"}}>→</span><span>{f}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Recommendation */}
+            {primary.recommendation&&(
+              <div style={{background:"rgba(0,212,170,.05)",borderRadius:10,padding:12,border:"1px solid rgba(0,212,170,.1)"}}>
+                <div style={{fontSize:12,color:"var(--acc)",lineHeight:1.5}}>💊 {primary.recommendation}</div>
               </div>
             )}
           </div>
         )}
 
-        {/* Systemic alert (V3 only) */}
-        {analysis.systemic_alert && (
-          <div style={{ background: "rgba(249,115,22,.08)", border: "1px solid rgba(249,115,22,.2)", borderRadius: 10, padding: 10, marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontFamily: mono, color: "#f97316", marginBottom: 3, letterSpacing: 1, fontWeight: 700 }}>⚠ POSSÍVEL DOENÇA SISTÊMICA</div>
-            <div style={{ fontSize: 11, color: "#fdba74", lineHeight: 1.5 }}>
-              <strong>Doença:</strong> {analysis.systemic_alert.disease}<br/>
-              <strong>Sinal:</strong> {analysis.systemic_alert.sign}
-            </div>
-          </div>
-        )}
-
-        {/* Findings */}
-        {analysis.findings && (
-          <div style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 10, marginBottom: 10 }}>
-            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 5, letterSpacing: 1 }}>ACHADOS</div>
-            {analysis.findings.map((f, i) => (
-              <div key={i} style={{ display: "flex", gap: 5, marginBottom: 2, fontSize: 10, color: "#cbd5e1" }}>
-                <span style={{ color: cls.c }}>→</span><span>{f}</span>
+        {/* ═══ SECONDARY ═══ */}
+        {secondary&&(
+          <div className="glass" style={{padding:14,marginBottom:14,animation:"slideUp .8s ease"}}>
+            <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1.5,marginBottom:8}}>● ACHADO SECUNDÁRIO</div>
+            <div style={{display:"flex",alignItems:"center",gap:12}}>
+              <span style={{fontSize:24}}>{secondary.type==="systemic"?"🫀":"🔍"}</span>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>{secondary.top_prediction_pt}</div>
+                <div style={{fontSize:10,color:"var(--t2)"}}>{secondary.type==="systemic"?"Sistêmico":"Ocular"} · {secondary.explanation?.split(".")[0]}.</div>
               </div>
-            ))}
+              <div style={{fontFamily:"var(--fm)",fontSize:18,fontWeight:700,color:urgC(secondary.urgency)}}>{Math.round((secondary.confidence||0)*100)}%</div>
+            </div>
+            {secondary.recommendation&&(
+              <div style={{marginTop:10,fontSize:11,color:"var(--acc)",paddingLeft:36}}>💊 {secondary.recommendation}</div>
+            )}
           </div>
         )}
 
-        {/* Scores */}
-        {analysis.all_scores && (
-          <details style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 10, marginBottom: 10 }}>
-            <summary style={{ fontSize: 9, fontFamily: mono, color: "#64748b", letterSpacing: 1, cursor: "pointer" }}>TODAS AS PROBABILIDADES</summary>
-            <div style={{ marginTop: 6 }}>
-              {Object.entries(analysis.all_scores).sort((a,b) => b[1]-a[1]).map(([name, score]) => {
-                const info = getClass(name);
-                return (
-                  <div key={name} style={{ marginBottom: 4 }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9 }}>
-                      <span style={{ color: info.c }}>{info.i} {name}</span>
-                      <span style={{ fontFamily: mono, color: "#94a3b8" }}>{Math.round(score*100)}%</span>
+        {/* Scores (expandable) */}
+        {res&&!bothNormal&&(
+          <details className="glass" style={{padding:14,marginBottom:14}}>
+            <summary style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,cursor:"pointer",outline:"none"}}>TODAS AS PROBABILIDADES</summary>
+            <div style={{marginTop:10,display:"flex",gap:10}} className="dual">
+              <div style={{flex:1}}>
+                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--blu)",marginBottom:6}}>OCULAR</div>
+                {res.ocular_analysis?.all_scores&&Object.entries(res.ocular_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
+                  <div key={k} style={{marginBottom:3}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
+                      <span style={{color:"var(--t2)"}}>{k}</span>
+                      <span style={{fontFamily:"var(--fm)",color:"var(--t3)"}}>{Math.round(v*100)}%</span>
                     </div>
-                    <div style={{ height: 2, borderRadius: 1, background: "rgba(255,255,255,.06)" }}>
-                      <div className="bf" style={{ height: "100%", borderRadius: 1, background: info.c, width: (score*100)+"%", opacity: score>.05?1:.3 }} />
+                    <div style={{height:2,borderRadius:1,background:"rgba(255,255,255,.05)"}}>
+                      <div className="bf" style={{height:"100%",borderRadius:1,background:"var(--blu)",width:(v*100)+"%",opacity:v>.03?1:.2}}/>
                     </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"#f97316",marginBottom:6}}>SISTÊMICO</div>
+                {res.systemic_analysis?.all_scores&&Object.entries(res.systemic_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
+                  <div key={k} style={{marginBottom:3}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
+                      <span style={{color:"var(--t2)"}}>{k}</span>
+                      <span style={{fontFamily:"var(--fm)",color:"var(--t3)"}}>{Math.round(v*100)}%</span>
+                    </div>
+                    <div style={{height:2,borderRadius:1,background:"rgba(255,255,255,.05)"}}>
+                      <div className="bf" style={{height:"100%",borderRadius:1,background:"#f97316",width:(v*100)+"%",opacity:v>.03?1:.2}}/>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </details>
         )}
 
-        {/* Recommendation */}
-        {analysis.recommendation && (
-          <div style={{ background: "rgba(245,158,11,.06)", border: "1px solid rgba(245,158,11,.12)", borderRadius: 10, padding: 10, fontSize: 11, color: "#fbbf24" }}>
-            💡 {analysis.recommendation}
-          </div>
-        )}
+        {err&&<div className="glass" style={{padding:12,marginBottom:14,borderColor:"rgba(239,68,68,.2)",textAlign:"center",fontSize:12,color:"#f87171"}}>{err}</div>}
       </div>
-    );
-  };
+    )}
 
-  return (
-    <div style={{ minHeight: "100vh", background: "rgba(5,21,32,0.85)", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#e2e8f0" }}>
-      <input ref={fRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={e => load(e.target.files?.[0])} />
-
-      {/* Header */}
-      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(10px)", background: "rgba(5,21,32,0.6)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#06b6d4,#0891b2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", boxShadow: "0 0 20px rgba(6,182,212,.3)" }}>E</div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>EYECHECK <span style={{ color: "#06b6d4", fontFamily: mono, fontSize: 11 }}>V3.0</span></div>
-            <div style={{ fontSize: 8, color: "#64748b", fontFamily: mono, letterSpacing: .5 }}>DUAL MODEL • 18 CONDIÇÕES • ML</div>
-          </div>
-        </div>
-        <div style={{ background: apiReady ? "rgba(6,182,212,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(6,182,212,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#06b6d4" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
-      </div>
-
-      <div style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px" }}>
-
-        {/* ═══ HOME SCREEN ═══ */}
-        {!img && (
-          <div style={{ animation: "fadeUp .6s ease" }}>
-            {/* Hero section with eye image */}
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <img src="/static/hero-eye.jpg" alt="EYECHECK AI Eye" className="hero-img" style={{ marginBottom: 16 }} />
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#f0fdfa", marginBottom: 6, textShadow: "0 0 30px rgba(6,182,212,.3)" }}>Seu olho conta a saúde do seu corpo</h2>
-              <p style={{ color: "#94a3b8", fontSize: 12 }}>2 modelos de IA analisam sua foto simultaneamente</p>
-            </div>
-
-            {/* Upload area */}
-            <div onClick={() => fRef.current?.click()}
-              onDragOver={e => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}
-              onDrop={e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files[0]); }}
-              className="btn"
-              style={{ border: "2px dashed " + (drag ? "#06b6d4" : "rgba(6,182,212,.2)"), borderRadius: 20, padding: "30px 24px", textAlign: "center", marginBottom: 16, background: drag ? "rgba(6,182,212,.05)" : "rgba(6,182,212,.03)", cursor: "pointer", backdropFilter: "blur(8px)" }}>
-              <div style={{ fontSize: 28, marginBottom: 8 }}>📸</div>
-              <div style={{ fontSize: 15, fontWeight: 600, color: "#e2e8f0", marginBottom: 4 }}>Tire uma foto do olho</div>
-              <div style={{ fontSize: 11, color: "#64748b" }}>📱 Câmera no celular • 💻 Upload no PC</div>
-            </div>
-
-            {/* Two model cards */}
-            <div style={{ display: "flex", gap: 10, marginBottom: 14 }} className="dual">
-              <div style={{ flex: 1, background: "rgba(6,182,212,.04)", border: "1px solid rgba(6,182,212,.12)", borderRadius: 14, padding: 14, backdropFilter: "blur(8px)" }}>
-                <div style={{ fontSize: 10, fontFamily: mono, color: "#06b6d4", marginBottom: 8, fontWeight: 700 }}>🔍 ANÁLISE OCULAR</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-                  {V2.filter(c=>c.k!=="normal").map(c => (
-                    <div key={c.k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "#94a3b8" }}>
-                      <span>{c.i}</span><span style={{ color: c.c }}>{c.d.split("—")[0]}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div style={{ flex: 1, background: "rgba(6,182,212,.04)", border: "1px solid rgba(6,182,212,.12)", borderRadius: 14, padding: 14, backdropFilter: "blur(8px)" }}>
-                <div style={{ fontSize: 10, fontFamily: mono, color: "#f97316", marginBottom: 8, fontWeight: 700 }}>🫀 ANÁLISE SISTÊMICA</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
-                  {V3.filter(c=>c.k!=="normal").map(c => (
-                    <div key={c.k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "#94a3b8" }}>
-                      <span>{c.i}</span><span style={{ color: c.c }}>{c.d.split("—")[0]}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* WhatsApp share */}
-            <button onClick={shareApp} className="btn"
-              style={{ width: "100%", padding: "13px 20px", borderRadius: 12, border: "none",
-                background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 13, fontWeight: 700,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                boxShadow: "0 4px 20px rgba(37,211,102,.3)" }}>
-              {WA(18)} Enviar pra um amigo
-            </button>
-          </div>
-        )}
-
-        {/* ═══ IMAGE + RESULTS ═══ */}
-        {img && (
-          <div style={{ animation: "fadeUp .5s ease" }}>
-            {/* Image preview */}
-            <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,.1)", background: "#000", marginBottom: 12, maxHeight: 300 }}>
-              {img && img !== "ok" ? (
-                <img src={img} alt="Eye" style={{ width: "100%", display: "block", maxHeight: 300, objectFit: "contain" }} />
-              ) : (
-                <div style={{ width: "100%", height: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                  <span style={{ fontSize: 32 }}>📸</span>
-                  <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 600 }}>Foto carregada</span>
-                </div>
-              )}
-              {busy && (
-                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
-                  <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#22c55e,transparent)", animation: "scan 1.5s linear infinite" }} />
-                  <div style={{ background: "rgba(0,0,0,.7)", borderRadius: 10, padding: "10px 20px", fontSize: 11, fontWeight: 600, fontFamily: mono, color: "#22c55e", animation: "pulse 1.5s infinite" }}>
-                    ANALISANDO COM 2 MODELOS...
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Action buttons */}
-            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-              {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#06b6d4,#0891b2)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(6,182,212,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
-              <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "📷 Nova Foto" : "✕"}</button>
-              {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                {WA(14)} Compartilhar
-              </button>}
-            </div>
-
-            {/* Both Normal Celebration */}
-            {bothNormal && (
-              <div style={{ textAlign: "center", padding: "20px 16px", marginBottom: 16, background: "rgba(34,197,94,.08)", border: "1px solid rgba(34,197,94,.2)", borderRadius: 16, animation: "pop .5s ease" }}>
-                <div style={{ fontSize: 48 }}>✅</div>
-                <div style={{ fontSize: 20, fontWeight: 700, color: "#22c55e", marginTop: 6 }}>Olhos saudáveis!</div>
-                <div style={{ fontSize: 12, color: "#86efac", marginTop: 4 }}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
-              </div>
-            )}
-
-            {/* Combined urgency banner */}
-            {res && !bothNormal && (
-              <div style={{ background: urgColor(res.combined_urgency) + "12", border: "1px solid " + urgColor(res.combined_urgency) + "30", borderRadius: 12, padding: "10px 14px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
-                <span style={{ fontSize: 20 }}>{urgIcon(res.combined_urgency)}</span>
-                <div>
-                  <div style={{ fontSize: 9, fontFamily: mono, color: urgColor(res.combined_urgency), letterSpacing: 1, fontWeight: 700 }}>URGÊNCIA COMBINADA</div>
-                  <div style={{ fontSize: 12, color: urgColor(res.combined_urgency), fontWeight: 600 }}>{urgLabel(res.combined_urgency)}</div>
-                </div>
-              </div>
-            )}
-
-            {/* ═══ DUAL RESULT CARDS ═══ */}
-            {res && (
-              <div style={{ display: "flex", gap: 14 }} className="dual">
-                <ResultCard
-                  analysis={res.ocular_analysis}
-                  title="ANÁLISE OCULAR"
-                  icon="🔍"
-                  classList={V2}
-                  getClass={gv2}
-                  animClass="slideIn"
-                />
-                <ResultCard
-                  analysis={res.systemic_analysis}
-                  title="ANÁLISE SISTÊMICA"
-                  icon="🫀"
-                  classList={V3}
-                  getClass={gv3}
-                  animClass="slideInR"
-                />
-              </div>
-            )}
-
-            {err && <div style={{ marginTop: 12, background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 10, padding: 11, fontSize: 11, color: "#f87171", textAlign: "center" }}>{err}</div>}
-          </div>
-        )}
-
-        {/* Disclaimer */}
-        <div style={{ marginTop: 24, padding: 12, borderRadius: 10, background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.05)", textAlign: "center" }}>
-          <div style={{ fontSize: 9, color: "#475569", fontFamily: mono, lineHeight: 1.6 }}>
-            ⚠️ TRIAGEM DE BEM-ESTAR — NÃO É DIAGNÓSTICO MÉDICO<br/>
-            EYECHECK V3.0 — Ferramenta educacional (MIT xPRO). Consulte um médico para diagnóstico.
-          </div>
-          <div style={{ marginTop: 6, fontSize: 8, color: "#334155", fontFamily: mono }}>
-            V2: MobileNetV2 TFLite (9 classes oculares) • V3: MobileNetV2 TFLite (9 classes sistêmicas) • BBG © 2026
-          </div>
-        </div>
+    {/* ═══ FOOTER ═══ */}
+    <div style={{marginTop:32,borderTop:"1px solid rgba(0,212,170,.08)",paddingTop:16,textAlign:"center"}}>
+      <div style={{background:"linear-gradient(90deg,transparent 10%,rgba(0,212,170,.1) 50%,transparent 90%)",height:1,marginBottom:16}}/>
+      <div style={{fontSize:10,color:"var(--t3)",fontFamily:"var(--fm)",lineHeight:1.8,letterSpacing:.5}}>
+        ⚠️ TRIAGEM DE BEM-ESTAR — NÃO É DIAGNÓSTICO<br/>
+        <span style={{color:"var(--t3)",fontSize:8}}>EYECHECK V4.0 · MobileNetV2 TFLite · 18 condições · BBG © 2026</span>
       </div>
     </div>
-  );
+
+    </main>
+  </div>);
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
   </script>
 </body>
 </html>
