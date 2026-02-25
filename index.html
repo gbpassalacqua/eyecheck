@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>EYECHECK — Screening Ocular por IA</title>
-  <meta property="og:title" content="EYECHECK — Screening Ocular por IA"/>
-  <meta property="og:description" content="Detecta 8 condições oculares + sinais de doenças sistêmicas só com uma foto. Machine Learning treinado com 1.157 imagens."/>
+  <title>EYECHECK — Seu olho conta a saúde do seu corpo</title>
+  <meta property="og:title" content="EYECHECK — Screening Ocular + Sistêmico por IA"/>
+  <meta property="og:description" content="Detecta doenças oculares e sinais de doenças sistêmicas (diabetes, anemia, tireoide, colesterol) só com uma foto do olho. 2 modelos de IA, 18 condições."/>
   <meta property="og:type" content="website"/>
   <meta property="og:image" content="https://em-content.zobj.net/source/apple/391/eyes_1f440.png"/>
-  <meta name="description" content="EYECHECK — IA que analisa seus olhos e detecta sinais de doenças sistêmicas. 9 classes, MobileNetV2."/>
+  <meta name="description" content="EYECHECK — IA que analisa seus olhos e detecta sinais de doenças. 2 modelos, 18 condições, MobileNetV2."/>
   <meta name="theme-color" content="#0a0e1a"/>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -25,10 +25,12 @@
     @keyframes scan{0%{top:0}100%{top:100%}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes slideInR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
     @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.2)}50%{box-shadow:0 0 40px rgba(34,197,94,.4)}}
+    @keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
     .bf{transition:width 1.2s cubic-bezier(.22,1,.36,1)}
     .btn{transition:all .2s;cursor:pointer}.btn:hover{transform:scale(1.03)}
-    @media(max-width:640px){.grid2{grid-template-columns:1fr !important}}
+    @media(max-width:700px){.dual{flex-direction:column !important}}
   </style>
 </head>
 <body>
@@ -36,23 +38,43 @@
   <script type="text/babel">
 const { useState, useRef, useCallback } = React;
 
-const CL = [
-  { n: "Normal", c: "#22c55e", i: "✅", d: "Olho saudável, sem sinais de doença.", s: null, u: 0 },
-  { n: "Cataract", c: "#a78bfa", i: "⚪", d: "Opacidade do cristalino. Pupila esbranquiçada.", s: null, u: 2 },
-  { n: "Conjunctivitis", c: "#ef4444", i: "🔴", d: "Inflamação da conjuntiva. Olho vermelho.", s: null, u: 1 },
-  { n: "Hemorrhage", c: "#dc2626", i: "🩸", d: "Hemorragia subconjuntival. Vaso rompido.", s: "Hipertensão arterial, distúrbios sanguíneos", u: 2 },
-  { n: "Jaundice", c: "#eab308", i: "🟡", d: "Icterícia. Amarelamento da esclera.", s: "Disfunção hepática, hepatite, obstrução biliar", u: 3 },
-  { n: "Pterygium", c: "#f97316", i: "🔺", d: "Crescimento de tecido sobre a conjuntiva.", s: null, u: 1 },
-  { n: "Ptosis", c: "#3b82f6", i: "👁️", d: "Pálpebra caída (ptose).", s: "AVC, miastenia gravis, dano nervoso", u: 3 },
-  { n: "Stye/Chalazion", c: "#ec4899", i: "🫧", d: "Nódulo na pálpebra. Terçol/calázio.", s: null, u: 1 },
-  { n: "Uveitis", c: "#f59e0b", i: "🟠", d: "Inflamação da úvea. Vermelhidão profunda.", s: "Doenças autoimunes, infecções sistêmicas", u: 2 },
+// V2 Ocular class metadata
+const V2 = [
+  { k:"normal",         c:"#22c55e", i:"✅", d:"Olho saudável" },
+  { k:"cataract",       c:"#a78bfa", i:"⚪", d:"Opacidade do cristalino" },
+  { k:"conjunctivitis", c:"#ef4444", i:"🔴", d:"Olho vermelho, inflamação" },
+  { k:"hemorrhage",     c:"#dc2626", i:"🩸", d:"Vaso rompido na esclera" },
+  { k:"jaundice",       c:"#eab308", i:"🟡", d:"Esclera amarelada (fígado)" },
+  { k:"pterygium",      c:"#f97316", i:"🔺", d:"Crescimento na conjuntiva" },
+  { k:"ptosis",         c:"#3b82f6", i:"👁️", d:"Pálpebra caída" },
+  { k:"stye_chalazion", c:"#ec4899", i:"🫧", d:"Terçol/calázio" },
+  { k:"uveitis",        c:"#f59e0b", i:"🟠", d:"Inflamação intraocular" },
 ];
-const UL = [
-  { l: "Sem ação necessária", c: "#22c55e", i: "✅" },
-  { l: "Monitorar — consulte se persistir", c: "#eab308", i: "👀" },
-  { l: "Agendar consulta em 30 dias", c: "#f97316", i: "📋" },
-  { l: "Consultar médico em 7 dias", c: "#ef4444", i: "🚨" },
+
+// V3 Systemic class metadata
+const V3 = [
+  { k:"normal",            c:"#22c55e", i:"✅", d:"Sem sinais sistêmicos" },
+  { k:"anemia",            c:"#f87171", i:"🩸", d:"Anemia — conjuntiva pálida" },
+  { k:"arcus_senilis",     c:"#94a3b8", i:"⭕", d:"Arco senil — colesterol" },
+  { k:"blue_sclera",       c:"#60a5fa", i:"🔵", d:"Esclera azulada" },
+  { k:"diabetic_eye",      c:"#a78bfa", i:"💜", d:"Sinais de diabetes" },
+  { k:"exophthalmos",      c:"#fb923c", i:"👀", d:"Olhos saltados — tireoide" },
+  { k:"kayser_fleischer",  c:"#d97706", i:"🟤", d:"Anel de cobre — Wilson" },
+  { k:"periorbital_edema", c:"#2dd4bf", i:"💧", d:"Inchaço periorbital — renal" },
+  { k:"xanthelasma",       c:"#fbbf24", i:"🟡", d:"Placas na pálpebra — colesterol" },
 ];
+
+const gv2 = (k) => V2.find(c => c.k === k) || V2[0];
+const gv3 = (k) => V3.find(c => c.k === k) || V3[0];
+const mono = "'Space Mono', monospace";
+const cardBg = "rgba(255,255,255,0.03)";
+const cardBd = "1px solid rgba(255,255,255,0.06)";
+
+const urgColor = (u) => u === "high" ? "#ef4444" : u === "moderate" ? "#eab308" : u === "low" ? "#a3e635" : "#22c55e";
+const urgLabel = (u) => u === "high" ? "ALTA" : u === "moderate" ? "MODERADA" : u === "low" ? "BAIXA" : "NENHUMA";
+const urgIcon  = (u) => u === "high" ? "🔴" : u === "moderate" ? "🟡" : u === "low" ? "🟢" : "✅";
+const sevIcon  = (l) => l === "none" ? "✅" : l === "low" ? "💚" : l === "moderate" ? "🟡" : "🟠";
+const sevColor = (l) => l === "none" || l === "low" ? "#22c55e" : l === "moderate" ? "#eab308" : "#f97316";
 
 const WA = (s) => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>;
 
@@ -63,37 +85,17 @@ function App() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const [drag, setDrag] = useState(false);
-  const [hist, setHist] = useState([]);
-  const [showH, setShowH] = useState(false);
   const [apiReady, setApiReady] = useState(false);
   const fRef = useRef(null);
+  const appUrl = typeof window !== "undefined" ? window.location.href : "";
 
   // Auto-wake server on page load (free tier cold start)
   React.useEffect(() => {
     const wake = () => fetch("/health").then(r => { if (r.ok) setApiReady(true); }).catch(() => {
-      setTimeout(wake, 3000); // retry every 3s until server wakes
+      setTimeout(wake, 3000);
     });
     wake();
   }, []);
-
-  const gc = (name) => CL.find(c => c.n === name || name?.includes(c.n)) || CL[0];
-  const mono = "'Space Mono', monospace";
-  const cardBg = "rgba(255,255,255,0.03)";
-  const cardBd = "1px solid rgba(255,255,255,0.06)";
-  const appUrl = window.location.href;
-
-  const shareApp = () => {
-    const msg = "👁️ EYECHECK — IA que analisa seus olhos e detecta sinais de doenças sistêmicas (fígado, AVC, hipertensão) só com uma foto!\n\n🔬 9 condições detectadas por Machine Learning\n📱 Funciona no celular, é só tirar foto\n\nTesta aí: " + appUrl;
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
-  };
-  const shareResult = () => {
-    if (!res) return;
-    const cls = res.classification || "?";
-    const conf = Math.round((res.confidence || 0) * 100);
-    const syst = res.systemic_alert ? "\n⚠️ Alerta sistêmico: " + res.systemic_alert : "";
-    const msg = "👁️ Fiz um screening ocular com EYECHECK!\n\n🔬 Resultado: " + gc(cls).i + " " + cls + " (" + conf + "% confiança)\n🤖 Modelo: Machine Learning" + syst + "\n💡 " + (res.recommendation || "") + "\n\n📱 Faça o seu também: " + appUrl;
-    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
-  };
 
   const load = useCallback((file) => {
     if (!file?.type.startsWith("image/")) return;
@@ -116,7 +118,7 @@ function App() {
     if (!b64) return;
     setBusy(true); setErr(null); setRes(null);
     try {
-      const r = await fetch("/analyze-base64", {
+      const r = await fetch("/predict/full", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: b64 })
@@ -124,229 +126,289 @@ function App() {
       const parsed = await r.json();
       if (parsed.error) throw new Error(parsed.error);
       setRes(parsed);
-      setHist(prev => [{ img, res: parsed }, ...prev].slice(0, 10));
     } catch (e) { setErr("Erro: " + e.message); }
     finally { setBusy(false); }
   };
 
   const reset = () => { setImg(null); setB64(null); setRes(null); setErr(null); };
 
+  const shareApp = () => {
+    const msg = "👁️ EYECHECK — IA que analisa seus olhos e detecta sinais de doenças (diabetes, anemia, colesterol, tireoide) só com uma foto!\n\n🔬 2 modelos de IA, 18 condições detectadas\n📱 Funciona no celular, é só tirar foto\n\nTesta aí: " + appUrl;
+    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
+  };
+
+  const shareResult = () => {
+    if (!res) return;
+    const oc = res.ocular_analysis;
+    const sy = res.systemic_analysis;
+    const msg = "👁️ Fiz um screening com EYECHECK!\n\n🔍 Olho: " + (oc?.top_prediction_pt || "?") + " (" + Math.round((oc?.confidence||0)*100) + "%)\n🫀 Corpo: " + (sy?.top_prediction_pt || "?") + " (" + Math.round((sy?.confidence||0)*100) + "%)\n⚠️ Urgência: " + urgLabel(res.combined_urgency) + "\n\n📱 Faça o seu: " + appUrl;
+    window.open("https://api.whatsapp.com/send?text=" + encodeURIComponent(msg), "_blank");
+  };
+
+  const bothNormal = res && res.ocular_analysis?.top_prediction === "normal" && res.systemic_analysis?.top_prediction === "normal";
+
+  // ─── Reusable result card ───
+  const ResultCard = ({ analysis, title, icon, classList, getClass, animClass }) => {
+    if (!analysis) return null;
+    const cls = getClass(analysis.top_prediction);
+    const conf = Math.round((analysis.confidence || 0) * 100);
+    return (
+      <div style={{ flex: 1, animation: animClass + " .6s ease" }}>
+        {/* Card header */}
+        <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 10 }}>
+          <span style={{ fontSize: 18 }}>{icon}</span>
+          <span style={{ fontSize: 11, fontFamily: mono, color: "#94a3b8", fontWeight: 700, letterSpacing: 1 }}>{title}</span>
+          <span style={{ marginLeft: "auto", background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.08)", borderRadius: 6, padding: "2px 8px", fontSize: 8, fontFamily: mono, color: "#64748b" }}>{analysis.model?.split("—")[0]?.trim()}</span>
+        </div>
+
+        {/* Classification */}
+        <div style={{ background: "linear-gradient(135deg," + cls.c + "15," + cls.c + "05)", border: "1px solid " + cls.c + "30", borderRadius: 14, padding: 14, marginBottom: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span style={{ fontSize: 28 }}>{cls.i}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 17, fontWeight: 700, color: cls.c }}>{analysis.top_prediction_pt}</div>
+              <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 1 }}>{cls.d}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontFamily: mono, fontSize: 20, fontWeight: 700, color: cls.c }}>{conf}%</div>
+              <div style={{ fontSize: 8, fontFamily: mono, color: urgColor(analysis.urgency) }}>
+                {urgIcon(analysis.urgency)} {urgLabel(analysis.urgency)}
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: 8, height: 4, borderRadius: 2, background: "rgba(255,255,255,.1)" }}>
+            <div className="bf" style={{ height: "100%", borderRadius: 2, background: cls.c, width: conf + "%" }} />
+          </div>
+        </div>
+
+        {/* Explanation + Severity */}
+        {analysis.explanation && (
+          <div style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 11, marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 4, letterSpacing: 1 }}>O QUE É ISSO?</div>
+            <div style={{ fontSize: 11, color: "#e2e8f0", lineHeight: 1.5 }}>{analysis.explanation}</div>
+            {analysis.severity && (
+              <div style={{ marginTop: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 13 }}>{sevIcon(analysis.severity_level)}</span>
+                <span style={{ fontSize: 10, fontWeight: 600, color: sevColor(analysis.severity_level) }}>{analysis.severity}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Systemic alert (V3 only) */}
+        {analysis.systemic_alert && (
+          <div style={{ background: "rgba(249,115,22,.08)", border: "1px solid rgba(249,115,22,.2)", borderRadius: 10, padding: 10, marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontFamily: mono, color: "#f97316", marginBottom: 3, letterSpacing: 1, fontWeight: 700 }}>⚠ POSSÍVEL DOENÇA SISTÊMICA</div>
+            <div style={{ fontSize: 11, color: "#fdba74", lineHeight: 1.5 }}>
+              <strong>Doença:</strong> {analysis.systemic_alert.disease}<br/>
+              <strong>Sinal:</strong> {analysis.systemic_alert.sign}
+            </div>
+          </div>
+        )}
+
+        {/* Findings */}
+        {analysis.findings && (
+          <div style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 10, marginBottom: 10 }}>
+            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 5, letterSpacing: 1 }}>ACHADOS</div>
+            {analysis.findings.map((f, i) => (
+              <div key={i} style={{ display: "flex", gap: 5, marginBottom: 2, fontSize: 10, color: "#cbd5e1" }}>
+                <span style={{ color: cls.c }}>→</span><span>{f}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Scores */}
+        {analysis.all_scores && (
+          <details style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: 10, marginBottom: 10 }}>
+            <summary style={{ fontSize: 9, fontFamily: mono, color: "#64748b", letterSpacing: 1, cursor: "pointer" }}>TODAS AS PROBABILIDADES</summary>
+            <div style={{ marginTop: 6 }}>
+              {Object.entries(analysis.all_scores).sort((a,b) => b[1]-a[1]).map(([name, score]) => {
+                const info = getClass(name);
+                return (
+                  <div key={name} style={{ marginBottom: 4 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9 }}>
+                      <span style={{ color: info.c }}>{info.i} {name}</span>
+                      <span style={{ fontFamily: mono, color: "#94a3b8" }}>{Math.round(score*100)}%</span>
+                    </div>
+                    <div style={{ height: 2, borderRadius: 1, background: "rgba(255,255,255,.06)" }}>
+                      <div className="bf" style={{ height: "100%", borderRadius: 1, background: info.c, width: (score*100)+"%", opacity: score>.05?1:.3 }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </details>
+        )}
+
+        {/* Recommendation */}
+        {analysis.recommendation && (
+          <div style={{ background: "rgba(245,158,11,.06)", border: "1px solid rgba(245,158,11,.12)", borderRadius: 10, padding: 10, fontSize: 11, color: "#fbbf24" }}>
+            💡 {analysis.recommendation}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div style={{ minHeight: "100vh", background: "linear-gradient(145deg, #0a0e1a 0%, #111827 40%, #0f172a 100%)", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#e2e8f0" }}>
       <input ref={fRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={e => load(e.target.files?.[0])} />
 
       {/* Header */}
-      <div style={{ padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#22c55e,#059669)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", boxShadow: "0 0 20px rgba(34,197,94,.3)" }}>E</div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>EYECHECK <span style={{ color: "#22c55e", fontFamily: mono, fontSize: 11 }}>V2.1</span></div>
-            <div style={{ fontSize: 9, color: "#64748b", fontFamily: mono, letterSpacing: .5 }}>EYE SCREENING • 9 CLASSES • ML</div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>EYECHECK <span style={{ color: "#22c55e", fontFamily: mono, fontSize: 11 }}>V3.0</span></div>
+            <div style={{ fontSize: 8, color: "#64748b", fontFamily: mono, letterSpacing: .5 }}>DUAL MODEL • 18 CONDIÇÕES • ML</div>
           </div>
         </div>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          {hist.length > 0 && <button onClick={() => setShowH(!showH)} style={{ background: "rgba(255,255,255,.05)", border: "1px solid rgba(255,255,255,.1)", color: "#94a3b8", borderRadius: 8, padding: "4px 10px", cursor: "pointer", fontSize: 10, fontFamily: mono }}>{"HIST (" + hist.length + ")"}</button>}
-          <div style={{ background: apiReady ? "rgba(34,197,94,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(34,197,94,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#22c55e" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
-        </div>
+        <div style={{ background: apiReady ? "rgba(34,197,94,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(34,197,94,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#22c55e" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
       </div>
 
-      <div style={{ maxWidth: 920, margin: "0 auto", padding: "24px 16px" }}>
+      <div style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px" }}>
 
-        {/* HOME */}
+        {/* ═══ HOME SCREEN ═══ */}
         {!img && (
           <div style={{ animation: "fadeUp .6s ease" }}>
-            <div style={{ textAlign: "center", marginBottom: 24 }}>
-              <h2 style={{ fontSize: 24, fontWeight: 700, color: "#f8fafc", marginBottom: 6 }}>Análise Ocular por IA</h2>
-              <p style={{ color: "#64748b", fontSize: 13 }}>Detecta 8 condições + indicadores de doenças sistêmicas</p>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#f8fafc", marginBottom: 4 }}>Seu olho conta a saúde do seu corpo</h2>
+              <p style={{ color: "#64748b", fontSize: 12 }}>2 modelos de IA analisam sua foto simultaneamente</p>
             </div>
+
+            {/* Upload area */}
             <div onClick={() => fRef.current?.click()}
               onDragOver={e => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}
               onDrop={e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files[0]); }}
               className="btn"
-              style={{ border: "2px dashed " + (drag ? "#22c55e" : "rgba(255,255,255,.12)"), borderRadius: 20, padding: "44px 24px", textAlign: "center", marginBottom: 20, background: drag ? "rgba(34,197,94,.05)" : "rgba(255,255,255,.02)", cursor: "pointer" }}>
-              <div style={{ width: 68, height: 68, borderRadius: "50%", background: "rgba(34,197,94,.1)", margin: "0 auto 14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 30 }}>👁️</div>
-              <div style={{ fontSize: 16, fontWeight: 600, color: "#e2e8f0", marginBottom: 6 }}>Tire uma foto ou selecione do álbum</div>
-              <div style={{ fontSize: 12, color: "#64748b", marginBottom: 12 }}>📱 No celular abre a câmera • 💻 No PC seleciona arquivo</div>
-              <div style={{ fontSize: 10, color: "#475569", fontFamily: mono }}>JPG / PNG • Foto externa do olho</div>
+              style={{ border: "2px dashed " + (drag ? "#22c55e" : "rgba(255,255,255,.12)"), borderRadius: 20, padding: "36px 24px", textAlign: "center", marginBottom: 16, background: drag ? "rgba(34,197,94,.05)" : "rgba(255,255,255,.02)", cursor: "pointer" }}>
+              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(34,197,94,.1)", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👁️</div>
+              <div style={{ fontSize: 15, fontWeight: 600, color: "#e2e8f0", marginBottom: 4 }}>Tire uma foto do olho</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>📱 Câmera no celular • 💻 Upload no PC</div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 7 }}>
-              {CL.map(c => (
-                <div key={c.n} style={{ background: cardBg, border: cardBd, borderRadius: 10, padding: "8px 10px", display: "flex", alignItems: "center", gap: 7 }}>
-                  <span style={{ fontSize: 16 }}>{c.i}</span>
-                  <div>
-                    <div style={{ fontSize: 10, fontWeight: 600, color: c.c }}>{c.n}</div>
-                    {c.s && <div style={{ fontSize: 7, color: "#f97316", marginTop: 1 }}>⚠ Sistêmica</div>}
-                  </div>
+
+            {/* Two model cards */}
+            <div style={{ display: "flex", gap: 10, marginBottom: 14 }} className="dual">
+              <div style={{ flex: 1, background: cardBg, border: cardBd, borderRadius: 14, padding: 14 }}>
+                <div style={{ fontSize: 10, fontFamily: mono, color: "#22c55e", marginBottom: 8, fontWeight: 700 }}>🔍 ANÁLISE OCULAR</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+                  {V2.filter(c=>c.k!=="normal").map(c => (
+                    <div key={c.k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "#94a3b8" }}>
+                      <span>{c.i}</span><span style={{ color: c.c }}>{c.d.split("—")[0]}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+              <div style={{ flex: 1, background: cardBg, border: cardBd, borderRadius: 14, padding: 14 }}>
+                <div style={{ fontSize: 10, fontFamily: mono, color: "#f97316", marginBottom: 8, fontWeight: 700 }}>🫀 ANÁLISE SISTÊMICA</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
+                  {V3.filter(c=>c.k!=="normal").map(c => (
+                    <div key={c.k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "#94a3b8" }}>
+                      <span>{c.i}</span><span style={{ color: c.c }}>{c.d.split("—")[0]}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
+
+            {/* WhatsApp share */}
             <button onClick={shareApp} className="btn"
-              style={{ width: "100%", marginTop: 16, padding: "14px 20px", borderRadius: 12, border: "none",
-                background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 14, fontWeight: 700,
+              style={{ width: "100%", padding: "13px 20px", borderRadius: 12, border: "none",
+                background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 13, fontWeight: 700,
                 display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
                 boxShadow: "0 4px 20px rgba(37,211,102,.3)" }}>
-              {WA(20)} Enviar pra um amigo
+              {WA(18)} Enviar pra um amigo
             </button>
           </div>
         )}
 
-        {/* IMAGE + RESULTS */}
+        {/* ═══ IMAGE + RESULTS ═══ */}
         {img && (
           <div style={{ animation: "fadeUp .5s ease" }}>
-            <div className="grid2" style={{ display: "grid", gridTemplateColumns: res ? "1fr 1fr" : "1fr", gap: 16 }}>
-              <div>
-                <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,.1)", background: "#000" }}>
-                  {img && img !== "ok" ? (
-                    <img src={img} alt="Eye" style={{ width: "100%", display: "block", maxHeight: 360, objectFit: "contain" }} />
-                  ) : (
-                    <div style={{ width: "100%", height: 180, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8 }}>
-                      <span style={{ fontSize: 36 }}>📸</span>
-                      <span style={{ fontSize: 12, color: "#22c55e", fontWeight: 600 }}>Foto carregada</span>
-                    </div>
-                  )}
-                  {busy && (
-                    <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#22c55e,transparent)", animation: "scan 1.5s linear infinite" }} />
-                      <div style={{ background: "rgba(0,0,0,.7)", borderRadius: 10, padding: "10px 20px", fontSize: 12, fontWeight: 600, fontFamily: mono, color: "#22c55e", animation: "pulse 1.5s infinite" }}>
-                        TFLITE INFERENCE...
-                      </div>
-                    </div>
-                  )}
-                  {res && <div style={{ position: "absolute", top: 10, right: 10, background: gc(res.classification).c, color: "#fff", borderRadius: 7, padding: "4px 10px", fontSize: 10, fontWeight: 700, fontFamily: mono }}>{res.classification?.toUpperCase()}</div>}
+            {/* Image preview */}
+            <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", border: "1px solid rgba(255,255,255,.1)", background: "#000", marginBottom: 12, maxHeight: 300 }}>
+              {img && img !== "ok" ? (
+                <img src={img} alt="Eye" style={{ width: "100%", display: "block", maxHeight: 300, objectFit: "contain" }} />
+              ) : (
+                <div style={{ width: "100%", height: 140, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                  <span style={{ fontSize: 32 }}>📸</span>
+                  <span style={{ fontSize: 11, color: "#22c55e", fontWeight: 600 }}>Foto carregada</span>
                 </div>
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                  {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#22c55e,#059669)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(34,197,94,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
-                  <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "📷 Nova Foto" : "✕"}</button>
-                  {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
-                    {WA(16)} Compartilhar
-                  </button>}
-                </div>
-              </div>
-
-              {res && (
-                <div style={{ animation: "slideIn .6s ease" }}>
-                  <div style={{ marginBottom: 12 }}>
-                    <span style={{ background: "rgba(34,197,94,.1)", border: "1px solid rgba(34,197,94,.3)", borderRadius: 8, padding: "3px 10px", fontSize: 9, fontFamily: mono, color: "#22c55e" }}>MobileNetV2-TFLite</span>
+              )}
+              {busy && (
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                  <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: "linear-gradient(90deg,transparent,#22c55e,transparent)", animation: "scan 1.5s linear infinite" }} />
+                  <div style={{ background: "rgba(0,0,0,.7)", borderRadius: 10, padding: "10px 20px", fontSize: 11, fontWeight: 600, fontFamily: mono, color: "#22c55e", animation: "pulse 1.5s infinite" }}>
+                    ANALISANDO COM 2 MODELOS...
                   </div>
-
-                  {res.description && (
-                    <div style={{ background: "rgba(255,255,255,.04)", border: cardBd, borderRadius: 10, padding: 11, marginBottom: 12 }}>
-                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 3, letterSpacing: 1 }}>O QUE A IA VÊ</div>
-                      <div style={{ fontSize: 11, color: "#cbd5e1", lineHeight: 1.5, fontStyle: "italic" }}>"{res.description}"</div>
-                    </div>
-                  )}
-
-                  <div style={{ background: "linear-gradient(135deg," + gc(res.classification).c + "15," + gc(res.classification).c + "05)", border: "1px solid " + gc(res.classification).c + "30", borderRadius: 14, padding: 14, marginBottom: 12, animation: "glow 3s infinite" }}>
-                    <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 3, letterSpacing: 1 }}>CLASSIFICAÇÃO</div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 26 }}>{gc(res.classification).i}</span>
-                      <div>
-                        <div style={{ fontSize: 18, fontWeight: 700, color: gc(res.classification).c }}>{res.classification}</div>
-                        <div style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>{gc(res.classification).d}</div>
-                      </div>
-                    </div>
-                    <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ flex: 1, height: 5, borderRadius: 3, background: "rgba(255,255,255,.1)" }}>
-                        <div className="bf" style={{ height: "100%", borderRadius: 3, background: gc(res.classification).c, width: ((res.confidence||0)*100) + "%" }} />
-                      </div>
-                      <span style={{ fontFamily: mono, fontSize: 14, fontWeight: 700, color: gc(res.classification).c }}>{Math.round((res.confidence||0)*100)}%</span>
-                    </div>
-                  </div>
-
-                  {res.explanation && (
-                    <div style={{ background: "rgba(255,255,255,.04)", border: cardBd, borderRadius: 12, padding: 13, marginBottom: 12 }}>
-                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 5, letterSpacing: 1 }}>O QUE É ISSO?</div>
-                      <div style={{ fontSize: 12, color: "#e2e8f0", lineHeight: 1.6 }}>{res.explanation}</div>
-                      {res.severity && (
-                        <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 7 }}>
-                          <span style={{ fontSize: 14 }}>{res.severity_level === "none" ? "✅" : res.severity_level === "low" ? "💚" : res.severity_level === "moderate" ? "🟡" : "🟠"}</span>
-                          <span style={{ fontSize: 11, fontWeight: 600, color: res.severity_level === "none" ? "#22c55e" : res.severity_level === "low" ? "#22c55e" : res.severity_level === "moderate" ? "#eab308" : "#f97316" }}>{res.severity}</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {gc(res.classification).u > 0 && (() => { const u = UL[gc(res.classification).u]; return (
-                    <div style={{ background: u.c + "12", border: "1px solid " + u.c + "30", borderRadius: 10, padding: "9px 12px", marginBottom: 12, display: "flex", alignItems: "center", gap: 8 }}>
-                      <span style={{ fontSize: 15 }}>{u.i}</span>
-                      <div>
-                        <div style={{ fontSize: 9, fontFamily: mono, color: u.c, letterSpacing: 1, fontWeight: 700 }}>URGÊNCIA</div>
-                        <div style={{ fontSize: 11, color: u.c, marginTop: 1 }}>{u.l}</div>
-                      </div>
-                    </div>);
-                  })()}
-
-                  {res.systemic_alert && (
-                    <div style={{ background: "rgba(249,115,22,.08)", border: "1px solid rgba(249,115,22,.2)", borderRadius: 10, padding: 11, marginBottom: 12 }}>
-                      <div style={{ fontSize: 9, fontFamily: mono, color: "#f97316", marginBottom: 3, letterSpacing: 1, fontWeight: 700 }}>⚠ ALERTA SISTÊMICO</div>
-                      <div style={{ fontSize: 11, color: "#fdba74", lineHeight: 1.5 }}>{res.systemic_alert}</div>
-                    </div>
-                  )}
-
-                  <div style={{ background: cardBg, border: cardBd, borderRadius: 12, padding: 12, marginBottom: 12 }}>
-                    <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 8, letterSpacing: 1 }}>PROBABILIDADES — 9 CLASSES</div>
-                    {res.scores && Object.entries(res.scores).sort((a,b) => b[1]-a[1]).map(([name,score],i) => {
-                      const info = gc(name);
-                      return (
-                        <div key={name} style={{ marginBottom: 5, animation: "slideIn " + (.3+i*.05) + "s ease" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2, fontSize: 9 }}>
-                            <span style={{ color: info.c, fontWeight: 600 }}>{info.i} {name}</span>
-                            <span style={{ fontFamily: mono, color: "#94a3b8" }}>{Math.round(score*100)}%</span>
-                          </div>
-                          <div style={{ height: 3, borderRadius: 2, background: "rgba(255,255,255,.06)" }}>
-                            <div className="bf" style={{ height: "100%", borderRadius: 2, background: info.c, width: (score*100) + "%", opacity: score>.05?1:.3 }} />
-                          </div>
-                        </div>);
-                    })}
-                  </div>
-
-                  {res.findings && (
-                    <div style={{ background: cardBg, border: cardBd, borderRadius: 12, padding: 12, marginBottom: 12 }}>
-                      <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 6, letterSpacing: 1 }}>ACHADOS CLÍNICOS</div>
-                      {res.findings.map((f,i) => (
-                        <div key={i} style={{ display: "flex", gap: 5, marginBottom: 3, fontSize: 11, color: "#cbd5e1" }}>
-                          <span style={{ color: "#22c55e" }}>→</span><span>{f}</span>
-                        </div>))}
-                    </div>
-                  )}
-
-                  {res.recommendation && (
-                    <div style={{ background: "rgba(245,158,11,.08)", border: "1px solid rgba(245,158,11,.15)", borderRadius: 10, padding: 11, fontSize: 11, color: "#fbbf24" }}>
-                      💡 {res.recommendation}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
+
+            {/* Action buttons */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#22c55e,#059669)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(34,197,94,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
+              <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "📷 Nova Foto" : "✕"}</button>
+              {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
+                {WA(14)} Compartilhar
+              </button>}
+            </div>
+
+            {/* Both Normal Celebration */}
+            {bothNormal && (
+              <div style={{ textAlign: "center", padding: "20px 16px", marginBottom: 16, background: "rgba(34,197,94,.08)", border: "1px solid rgba(34,197,94,.2)", borderRadius: 16, animation: "pop .5s ease" }}>
+                <div style={{ fontSize: 48 }}>✅</div>
+                <div style={{ fontSize: 20, fontWeight: 700, color: "#22c55e", marginTop: 6 }}>Olhos saudáveis!</div>
+                <div style={{ fontSize: 12, color: "#86efac", marginTop: 4 }}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
+              </div>
+            )}
+
+            {/* Combined urgency banner */}
+            {res && !bothNormal && (
+              <div style={{ background: urgColor(res.combined_urgency) + "12", border: "1px solid " + urgColor(res.combined_urgency) + "30", borderRadius: 12, padding: "10px 14px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 20 }}>{urgIcon(res.combined_urgency)}</span>
+                <div>
+                  <div style={{ fontSize: 9, fontFamily: mono, color: urgColor(res.combined_urgency), letterSpacing: 1, fontWeight: 700 }}>URGÊNCIA COMBINADA</div>
+                  <div style={{ fontSize: 12, color: urgColor(res.combined_urgency), fontWeight: 600 }}>{urgLabel(res.combined_urgency)}</div>
+                </div>
+              </div>
+            )}
+
+            {/* ═══ DUAL RESULT CARDS ═══ */}
+            {res && (
+              <div style={{ display: "flex", gap: 14 }} className="dual">
+                <ResultCard
+                  analysis={res.ocular_analysis}
+                  title="ANÁLISE OCULAR"
+                  icon="🔍"
+                  classList={V2}
+                  getClass={gv2}
+                  animClass="slideIn"
+                />
+                <ResultCard
+                  analysis={res.systemic_analysis}
+                  title="ANÁLISE SISTÊMICA"
+                  icon="🫀"
+                  classList={V3}
+                  getClass={gv3}
+                  animClass="slideInR"
+                />
+              </div>
+            )}
+
             {err && <div style={{ marginTop: 12, background: "rgba(239,68,68,.1)", border: "1px solid rgba(239,68,68,.2)", borderRadius: 10, padding: 11, fontSize: 11, color: "#f87171", textAlign: "center" }}>{err}</div>}
           </div>
         )}
 
-        {showH && hist.length > 0 && (
-          <div style={{ marginTop: 16, background: cardBg, border: cardBd, borderRadius: 14, padding: 14, animation: "fadeUp .4s ease" }}>
-            <div style={{ fontSize: 9, fontFamily: mono, color: "#64748b", marginBottom: 10, letterSpacing: 1 }}>HISTÓRICO</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(90px,1fr))", gap: 7 }}>
-              {hist.map((h,i) => (
-                <div key={i} style={{ borderRadius: 8, overflow: "hidden", border: "1px solid " + gc(h.res.classification).c + "30" }}>
-                  {h.img && h.img !== "ok" ? (
-                    <img src={h.img} style={{ width: "100%", height: 60, objectFit: "cover" }} />
-                  ) : (
-                    <div style={{ width: "100%", height: 60, background: "#111", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>📸</div>
-                  )}
-                  <div style={{ padding: "3px 5px", fontSize: 8, fontFamily: mono, background: "rgba(0,0,0,.3)", color: gc(h.res.classification).c }}>
-                    {h.res.classification} {Math.round(h.res.confidence*100)}%
-                  </div>
-                </div>))}
-            </div>
-          </div>
-        )}
-
+        {/* Disclaimer */}
         <div style={{ marginTop: 24, padding: 12, borderRadius: 10, background: "rgba(255,255,255,.02)", border: "1px solid rgba(255,255,255,.05)", textAlign: "center" }}>
           <div style={{ fontSize: 9, color: "#475569", fontFamily: mono, lineHeight: 1.6 }}>
-            ⚠️ SCREENING ONLY — NOT MEDICAL DIAGNOSTIC<br/>EYECHECK V2.1 — MIT xPRO educational demo. Consult an ophthalmologist.
+            ⚠️ TRIAGEM DE BEM-ESTAR — NÃO É DIAGNÓSTICO MÉDICO<br/>
+            EYECHECK V3.0 — Ferramenta educacional (MIT xPRO). Consulte um médico para diagnóstico.
           </div>
           <div style={{ marginTop: 6, fontSize: 8, color: "#334155", fontFamily: mono }}>
-            MODEL: MobileNetV2 TFLite • 9 Classes • BBG © 2026
+            V2: MobileNetV2 TFLite (9 classes oculares) • V3: MobileNetV2 TFLite (9 classes sistêmicas) • BBG © 2026
           </div>
         </div>
       </div>

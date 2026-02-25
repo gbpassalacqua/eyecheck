@@ -5,5 +5,7 @@ services:
     plan: free
     healthCheckPath: /health
     envVars:
-      - key: MODEL_PATH
+      - key: V2_MODEL_PATH
         value: guard2live_v2_9class.tflite
+      - key: V3_MODEL_PATH
+        value: guard2live_v3_systemic.tflite

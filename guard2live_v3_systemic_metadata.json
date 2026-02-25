@@ -1,0 +1,68 @@
+{
+  "model": "Guard2Live V3",
+  "version": "3.0",
+  "input_size": 224,
+  "classes": [
+    "anemia",
+    "arcus_senilis",
+    "blue_sclera",
+    "diabetic_eye",
+    "exophthalmos",
+    "kayser_fleischer",
+    "normal",
+    "periorbital_edema",
+    "xanthelasma"
+  ],
+  "num_classes": 9,
+  "photo_type": "external_eye_smartphone",
+  "preprocessing": "mobilenet_v2_preprocess_input",
+  "systemic_mapping": {
+    "anemia": {
+      "disease": "Anemia ferropriva, hemorragia interna, B12",
+      "urgency": "high",
+      "sign": "Conjuntiva pálida"
+    },
+    "arcus_senilis": {
+      "disease": "Colesterol alto, hiperlipidemia, risco cardiovascular",
+      "urgency": "moderate",
+      "sign": "Anel branco ao redor da íris"
+    },
+    "blue_sclera": {
+      "disease": "Osteogênese imperfeita, Ehlers-Danlos, anemia severa",
+      "urgency": "high",
+      "sign": "Esclera azulada"
+    },
+    "diabetic_eye": {
+      "disease": "Diabetes mellitus tipo 1/2",
+      "urgency": "moderate",
+      "sign": "Sinais oculares externos de diabetes"
+    },
+    "exophthalmos": {
+      "disease": "Hipertireoidismo (Doença de Graves)",
+      "urgency": "high",
+      "sign": "Olhos saltados (exoftalmia)"
+    },
+    "kayser_fleischer": {
+      "disease": "Doença de Wilson (acúmulo de cobre)",
+      "urgency": "high",
+      "sign": "Anel dourado/marrom na córnea"
+    },
+    "normal": {
+      "disease": null,
+      "urgency": "none",
+      "sign": "Olho saudável"
+    },
+    "periorbital_edema": {
+      "disease": "Doença renal, hipotireoidismo, nefrose",
+      "urgency": "high",
+      "sign": "Edema/inchaço periorbital"
+    },
+    "xanthelasma": {
+      "disease": "Colesterol alto, dislipidemia, risco cardíaco",
+      "urgency": "moderate",
+      "sign": "Placas amarelas na pálpebra"
+    }
+  },
+  "disclaimer": "Wellness screening only. Not medical diagnostic.",
+  "tagline": "Seu olho conta a saude do seu corpo"
+}
