@@ -6,6 +6,7 @@ Tagline: "Seu olho conta a saúde do seu corpo"
 """
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 import numpy as np
 from PIL import Image
@@ -35,6 +36,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Static files (images, assets)
+static_dir = os.path.join(os.path.dirname(__file__) or ".", "static")
+if os.path.isdir(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    print(f"Static files: {static_dir}")
 
 # ═══════════════════════════════════════════════════════════════
 # CLASS DEFINITIONS (alphabetical = model output index order)

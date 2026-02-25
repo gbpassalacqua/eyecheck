@@ -20,7 +20,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{background:#0a0e1a;overflow-x:hidden}
+    body{background:#051520;background-image:url('/static/bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;overflow-x:hidden}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     @keyframes scan{0%{top:0}100%{top:100%}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -28,9 +28,11 @@
     @keyframes slideInR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
     @keyframes glow{0%,100%{box-shadow:0 0 20px rgba(34,197,94,.2)}50%{box-shadow:0 0 40px rgba(34,197,94,.4)}}
     @keyframes pop{0%{transform:scale(0)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
     .bf{transition:width 1.2s cubic-bezier(.22,1,.36,1)}
     .btn{transition:all .2s;cursor:pointer}.btn:hover{transform:scale(1.03)}
-    @media(max-width:700px){.dual{flex-direction:column !important}}
+    .hero-img{border-radius:50%;width:140px;height:140px;object-fit:cover;border:3px solid rgba(34,197,94,.4);box-shadow:0 0 40px rgba(34,197,94,.3),0 0 80px rgba(6,182,212,.15);animation:float 4s ease-in-out infinite}
+    @media(max-width:700px){.dual{flex-direction:column !important}.hero-img{width:110px;height:110px}}
   </style>
 </head>
 <body>
@@ -252,19 +254,19 @@ function App() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(145deg, #0a0e1a 0%, #111827 40%, #0f172a 100%)", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#e2e8f0" }}>
+    <div style={{ minHeight: "100vh", background: "rgba(5,21,32,0.85)", fontFamily: "'DM Sans', system-ui, sans-serif", color: "#e2e8f0" }}>
       <input ref={fRef} type="file" accept="image/*" capture="environment" style={{ display: "none" }} onChange={e => load(e.target.files?.[0])} />
 
       {/* Header */}
-      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid rgba(255,255,255,0.08)", backdropFilter: "blur(10px)", background: "rgba(5,21,32,0.6)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#22c55e,#059669)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", boxShadow: "0 0 20px rgba(34,197,94,.3)" }}>E</div>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#06b6d4,#0891b2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 17, fontWeight: 700, color: "#fff", boxShadow: "0 0 20px rgba(6,182,212,.3)" }}>E</div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>EYECHECK <span style={{ color: "#22c55e", fontFamily: mono, fontSize: 11 }}>V3.0</span></div>
+            <div style={{ fontWeight: 700, fontSize: 16, color: "#f8fafc" }}>EYECHECK <span style={{ color: "#06b6d4", fontFamily: mono, fontSize: 11 }}>V3.0</span></div>
             <div style={{ fontSize: 8, color: "#64748b", fontFamily: mono, letterSpacing: .5 }}>DUAL MODEL • 18 CONDIÇÕES • ML</div>
           </div>
         </div>
-        <div style={{ background: apiReady ? "rgba(34,197,94,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(34,197,94,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#22c55e" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
+        <div style={{ background: apiReady ? "rgba(6,182,212,.15)" : "rgba(234,179,8,.1)", border: "1px solid " + (apiReady ? "rgba(6,182,212,.3)" : "rgba(234,179,8,.3)"), borderRadius: 8, padding: "4px 10px", fontSize: 9, fontFamily: mono, color: apiReady ? "#06b6d4" : "#eab308" }}>{apiReady ? "● ONLINE" : "◌ CONECTANDO..."}</div>
       </div>
 
       <div style={{ maxWidth: 960, margin: "0 auto", padding: "20px 16px" }}>
@@ -272,9 +274,11 @@ function App() {
         {/* ═══ HOME SCREEN ═══ */}
         {!img && (
           <div style={{ animation: "fadeUp .6s ease" }}>
-            <div style={{ textAlign: "center", marginBottom: 20 }}>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#f8fafc", marginBottom: 4 }}>Seu olho conta a saúde do seu corpo</h2>
-              <p style={{ color: "#64748b", fontSize: 12 }}>2 modelos de IA analisam sua foto simultaneamente</p>
+            {/* Hero section with eye image */}
+            <div style={{ textAlign: "center", marginBottom: 24 }}>
+              <img src="/static/hero-eye.jpg" alt="EYECHECK AI Eye" className="hero-img" style={{ marginBottom: 16 }} />
+              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#f0fdfa", marginBottom: 6, textShadow: "0 0 30px rgba(6,182,212,.3)" }}>Seu olho conta a saúde do seu corpo</h2>
+              <p style={{ color: "#94a3b8", fontSize: 12 }}>2 modelos de IA analisam sua foto simultaneamente</p>
             </div>
 
             {/* Upload area */}
@@ -282,16 +286,16 @@ function App() {
               onDragOver={e => { e.preventDefault(); setDrag(true); }} onDragLeave={() => setDrag(false)}
               onDrop={e => { e.preventDefault(); setDrag(false); load(e.dataTransfer.files[0]); }}
               className="btn"
-              style={{ border: "2px dashed " + (drag ? "#22c55e" : "rgba(255,255,255,.12)"), borderRadius: 20, padding: "36px 24px", textAlign: "center", marginBottom: 16, background: drag ? "rgba(34,197,94,.05)" : "rgba(255,255,255,.02)", cursor: "pointer" }}>
-              <div style={{ width: 64, height: 64, borderRadius: "50%", background: "rgba(34,197,94,.1)", margin: "0 auto 12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28 }}>👁️</div>
+              style={{ border: "2px dashed " + (drag ? "#06b6d4" : "rgba(6,182,212,.2)"), borderRadius: 20, padding: "30px 24px", textAlign: "center", marginBottom: 16, background: drag ? "rgba(6,182,212,.05)" : "rgba(6,182,212,.03)", cursor: "pointer", backdropFilter: "blur(8px)" }}>
+              <div style={{ fontSize: 28, marginBottom: 8 }}>📸</div>
               <div style={{ fontSize: 15, fontWeight: 600, color: "#e2e8f0", marginBottom: 4 }}>Tire uma foto do olho</div>
               <div style={{ fontSize: 11, color: "#64748b" }}>📱 Câmera no celular • 💻 Upload no PC</div>
             </div>
 
             {/* Two model cards */}
             <div style={{ display: "flex", gap: 10, marginBottom: 14 }} className="dual">
-              <div style={{ flex: 1, background: cardBg, border: cardBd, borderRadius: 14, padding: 14 }}>
-                <div style={{ fontSize: 10, fontFamily: mono, color: "#22c55e", marginBottom: 8, fontWeight: 700 }}>🔍 ANÁLISE OCULAR</div>
+              <div style={{ flex: 1, background: "rgba(6,182,212,.04)", border: "1px solid rgba(6,182,212,.12)", borderRadius: 14, padding: 14, backdropFilter: "blur(8px)" }}>
+                <div style={{ fontSize: 10, fontFamily: mono, color: "#06b6d4", marginBottom: 8, fontWeight: 700 }}>🔍 ANÁLISE OCULAR</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
                   {V2.filter(c=>c.k!=="normal").map(c => (
                     <div key={c.k} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 9, color: "#94a3b8" }}>
@@ -300,7 +304,7 @@ function App() {
                   ))}
                 </div>
               </div>
-              <div style={{ flex: 1, background: cardBg, border: cardBd, borderRadius: 14, padding: 14 }}>
+              <div style={{ flex: 1, background: "rgba(6,182,212,.04)", border: "1px solid rgba(6,182,212,.12)", borderRadius: 14, padding: 14, backdropFilter: "blur(8px)" }}>
                 <div style={{ fontSize: 10, fontFamily: mono, color: "#f97316", marginBottom: 8, fontWeight: 700 }}>🫀 ANÁLISE SISTÊMICA</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 5 }}>
                   {V3.filter(c=>c.k!=="normal").map(c => (
@@ -348,7 +352,7 @@ function App() {
 
             {/* Action buttons */}
             <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-              {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#22c55e,#059669)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(34,197,94,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
+              {!busy && !res && <button onClick={apiReady ? analyze : undefined} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: apiReady ? "linear-gradient(135deg,#06b6d4,#0891b2)" : "rgba(255,255,255,.1)", color: apiReady ? "#fff" : "#64748b", fontSize: 14, fontWeight: 700, boxShadow: apiReady ? "0 4px 20px rgba(6,182,212,.3)" : "none", opacity: apiReady ? 1 : 0.6 }}>{apiReady ? "🔬 Analisar Olho" : "⏳ Servidor iniciando..."}</button>}
               <button onClick={reset} className="btn" style={{ flex: res ? 1 : 0, padding: "12px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.05)", color: "#94a3b8", fontSize: 12, fontWeight: 600 }}>{res ? "📷 Nova Foto" : "✕"}</button>
               {res && <button onClick={shareResult} className="btn" style={{ flex: 1, padding: "12px", borderRadius: 10, border: "none", background: "linear-gradient(135deg, #25D366, #128C7E)", color: "#fff", fontSize: 12, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", gap: 6 }}>
                 {WA(14)} Compartilhar
