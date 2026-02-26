@@ -355,28 +355,28 @@ function App() {
 
     {/* ═══ HEADER NAV ═══ */}
     <header style={{
-      position:"sticky",top:0,zIndex:50,padding:"10px 14px",
+      position:"sticky",top:0,zIndex:50,padding:"12px 18px",
       display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid var(--border)",
       background:"rgba(250,251,252,0.82)",backdropFilter:"blur(18px)",WebkitBackdropFilter:"blur(18px)"
     }}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{display:"flex",alignItems:"center",gap:11}}>
         <div style={{
-          width:34,height:34,borderRadius:10,
+          width:38,height:38,borderRadius:11,
           background:"var(--grad-strong)",
           display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:15,color:"#fff",fontWeight:900
+          fontSize:17,color:"#fff",fontWeight:900
         }}>◉</div>
         <div>
-          <div style={{fontFamily:"var(--fd)",fontSize:17,color:"var(--ink)",letterSpacing:"-0.02em",lineHeight:1.1}}>EyeCheck</div>
-          <div style={{fontSize:10,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".06em",fontWeight:600}}>V4.0 · AI SCREENING</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:20,color:"var(--ink)",letterSpacing:"-0.02em",lineHeight:1.1}}>EyeCheck</div>
+          <div style={{fontSize:11,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".06em",fontWeight:600}}>V4.0 · AI SCREENING</div>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:8}}>
         <div style={{
           background:apiReady?"rgba(16,185,129,0.08)":"rgba(245,158,11,0.08)",
           border:"1px solid "+(apiReady?"rgba(16,185,129,0.18)":"rgba(245,158,11,0.18)"),
-          borderRadius:999,padding:"5px 11px",fontSize:10,fontFamily:"var(--fm)",fontWeight:700,
+          borderRadius:999,padding:"6px 13px",fontSize:12,fontFamily:"var(--fm)",fontWeight:700,
           color:apiReady?"var(--secondary2)":"var(--amber)",letterSpacing:".08em",
           display:"flex",alignItems:"center",gap:6
         }}>
@@ -391,23 +391,23 @@ function App() {
       </div>
     </header>
 
-    <main style={{maxWidth:900,margin:"0 auto",padding:"18px 24px"}}>
+    <main style={{maxWidth:960,margin:"0 auto",padding:"22px 28px"}}>
 
     {/* ═══ HOME ═══ */}
     {!img&&(
       <div style={{animation:"fadeUp .5s ease"}}>
         {/* ROW 1: Hero left + Upload right */}
-        <div style={{display:"flex",gap:16,marginBottom:14,alignItems:"stretch",flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:20,marginBottom:18,alignItems:"stretch",flexWrap:"wrap"}}>
           {/* LEFT — Hero info */}
-          <div style={{flex:"1 1 360px",display:"flex",alignItems:"center",gap:16,minWidth:0}}>
+          <div style={{flex:"1 1 400px",display:"flex",alignItems:"center",gap:20,minWidth:0}}>
             {/* Eye scanner */}
             <div style={{
-              position:"relative",width:100,height:100,flexShrink:0,
+              position:"relative",width:120,height:120,flexShrink:0,
               animation:"breathe 4s ease-in-out infinite"
             }}>
               <img src="/static/hero-eye.jpg" alt="EYECHECK" style={{
-                width:90,height:90,borderRadius:"50%",objectFit:"cover",
-                position:"absolute",top:5,left:5,zIndex:2,
+                width:108,height:108,borderRadius:"50%",objectFit:"cover",
+                position:"absolute",top:6,left:6,zIndex:2,
                 boxShadow:"0 0 0 1px rgba(37,99,235,0.12), 0 0 20px rgba(37,99,235,0.10)"
               }}/>
               <div style={{position:"absolute",inset:0,borderRadius:"50%",border:"1.5px dashed rgba(16,185,129,0.28)"}}/>
@@ -418,18 +418,18 @@ function App() {
             {/* Text */}
             <div style={{minWidth:0}}>
               <div style={{
-                display:"inline-flex",alignItems:"center",gap:6,
+                display:"inline-flex",alignItems:"center",gap:7,
                 background:"rgba(37,99,235,0.06)",border:"1px solid rgba(37,99,235,0.12)",
-                borderRadius:999,padding:"4px 12px",fontSize:10,color:"var(--primary2)",
-                fontWeight:800,letterSpacing:".08em",textTransform:"uppercase",marginBottom:6
+                borderRadius:999,padding:"5px 14px",fontSize:12,color:"var(--primary2)",
+                fontWeight:800,letterSpacing:".08em",textTransform:"uppercase",marginBottom:8
               }}>
-                <span style={{width:6,height:6,borderRadius:"50%",background:"var(--secondary)",boxShadow:"0 0 0 3px rgba(16,185,129,0.10)",animation:"pulse 2.2s ease-in-out infinite"}}/>
+                <span style={{width:7,height:7,borderRadius:"50%",background:"var(--secondary)",boxShadow:"0 0 0 4px rgba(16,185,129,0.10)",animation:"pulse 2.2s ease-in-out infinite"}}/>
                 SCREENING POR IA
               </div>
-              <h1 style={{fontFamily:"var(--fd)",fontSize:26,lineHeight:1.15,color:"var(--ink)",marginBottom:5,letterSpacing:"-0.02em"}}>
+              <h1 style={{fontFamily:"var(--fd)",fontSize:31,lineHeight:1.15,color:"var(--ink)",marginBottom:6,letterSpacing:"-0.02em"}}>
                 Seu olho conta a saúde <span style={{background:"linear-gradient(90deg,var(--primary),var(--secondary))",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>do seu corpo</span>
               </h1>
-              <p style={{color:"var(--muted)",fontSize:13,fontWeight:400,lineHeight:1.5,margin:0}}>IA analisa 18 condições pelo seu olho — doenças oculares e sinais sistêmicos em segundos.</p>
+              <p style={{color:"var(--muted)",fontSize:15,fontWeight:400,lineHeight:1.5,margin:0}}>IA analisa 18 condições pelo seu olho — doenças oculares e sinais sistêmicos em segundos.</p>
             </div>
           </div>
 
@@ -439,73 +439,73 @@ function App() {
             onDrop={e=>{e.preventDefault();setDrag(false);load(e.dataTransfer.files[0])}}
             className="btn card scan-hover"
             style={{
-              flex:"0 0 220px",borderColor:drag?"var(--primary)":"var(--border)",
-              padding:"22px 16px",textAlign:"center",cursor:"pointer",
+              flex:"0 0 260px",borderColor:drag?"var(--primary)":"var(--border)",
+              padding:"26px 20px",textAlign:"center",cursor:"pointer",
               boxShadow:drag?"0 0 0 3px rgba(37,99,235,0.08), 0 4px 16px rgba(15,23,42,0.06)":"0 4px 16px rgba(15,23,42,0.05)",
               position:"relative",overflow:"hidden",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"
             }}>
             <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"var(--grad-strong)",borderRadius:"16px 16px 0 0"}}/>
-            <div style={{fontSize:32,marginBottom:6}}>📸</div>
-            <div style={{fontFamily:"var(--fd)",fontSize:18,color:"var(--ink)",marginBottom:3}}>Iniciar Análise</div>
-            <div style={{fontSize:12,color:"var(--muted)",fontWeight:400,marginBottom:8}}>Foto ou upload</div>
-            <div style={{display:"flex",gap:8}}>
-              <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(37,99,235,0.05)",padding:"3px 9px",borderRadius:6,border:"1px solid rgba(37,99,235,0.08)"}}>📱 CÂMERA</span>
-              <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(16,185,129,0.05)",padding:"3px 9px",borderRadius:6,border:"1px solid rgba(16,185,129,0.08)"}}>📁 ARQUIVO</span>
+            <div style={{fontSize:38,marginBottom:8}}>📸</div>
+            <div style={{fontFamily:"var(--fd)",fontSize:22,color:"var(--ink)",marginBottom:4}}>Iniciar Análise</div>
+            <div style={{fontSize:14,color:"var(--muted)",fontWeight:400,marginBottom:10}}>Foto ou upload</div>
+            <div style={{display:"flex",gap:10}}>
+              <span style={{fontSize:12,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(37,99,235,0.05)",padding:"4px 11px",borderRadius:6,border:"1px solid rgba(37,99,235,0.08)"}}>📱 CÂMERA</span>
+              <span style={{fontSize:12,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(16,185,129,0.05)",padding:"4px 11px",borderRadius:6,border:"1px solid rgba(16,185,129,0.08)"}}>📁 ARQUIVO</span>
             </div>
           </div>
         </div>
 
         {/* ROW 2: Disease grids + Stats */}
-        <div className="home-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:10,marginBottom:14,alignItems:"start"}}>
+        <div className="home-grid3" style={{display:"grid",gridTemplateColumns:"1fr 1fr auto",gap:12,marginBottom:18,alignItems:"start"}}>
           {/* Ocular */}
-          <div className="card scan-hover" style={{padding:"10px 12px",position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg, rgba(37,99,235,0.80), rgba(37,99,235,0.40))"}}/>
-            <div style={{fontSize:11,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:6,fontWeight:700,letterSpacing:".08em"}}>🔍 OCULAR · 8</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+          <div className="card scan-hover" style={{padding:"12px 14px",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(37,99,235,0.80), rgba(37,99,235,0.40))"}}/>
+            <div style={{fontSize:13,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:8,fontWeight:700,letterSpacing:".08em"}}>🔍 OCULAR · 8</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
               {GRID_OC.map(d=>(
-                <div key={d.n} style={{background:"rgba(37,99,235,0.04)",border:"1px solid rgba(37,99,235,0.08)",borderRadius:6,padding:"3px 8px",fontSize:11,color:"var(--text)",display:"flex",alignItems:"center",gap:3,fontWeight:500}}>
-                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(37,99,235,0.04)",border:"1px solid rgba(37,99,235,0.08)",borderRadius:7,padding:"4px 10px",fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
+                  <span style={{fontSize:13}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
           </div>
           {/* Systemic */}
-          <div className="card scan-hover" style={{padding:"10px 12px",position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg, rgba(16,185,129,0.80), rgba(16,185,129,0.40))"}}/>
-            <div style={{fontSize:11,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:6,fontWeight:700,letterSpacing:".08em"}}>🫀 SISTÊMICO · 8</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
+          <div className="card scan-hover" style={{padding:"12px 14px",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(16,185,129,0.80), rgba(16,185,129,0.40))"}}/>
+            <div style={{fontSize:13,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:8,fontWeight:700,letterSpacing:".08em"}}>🫀 SISTÊMICO · 8</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
               {GRID_SY.map(d=>(
-                <div key={d.n} style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.08)",borderRadius:6,padding:"3px 8px",fontSize:11,color:"var(--text)",display:"flex",alignItems:"center",gap:3,fontWeight:500}}>
-                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.08)",borderRadius:7,padding:"4px 10px",fontSize:13,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
+                  <span style={{fontSize:13}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
           </div>
           {/* Stats mini */}
-          <div className="stats-col" style={{display:"flex",flexDirection:"column",gap:6,minWidth:90}}>
+          <div className="stats-col" style={{display:"flex",flexDirection:"column",gap:8,minWidth:105}}>
             {[{n:"18",l:"Condições"},{n:"2",l:"Modelos"},{n:"<3s",l:"Análise"}].map((s,i)=>(
-              <div key={i} className="card" style={{padding:"8px 12px",textAlign:"center"}}>
-                <div style={{fontFamily:"var(--fd)",fontSize:22,color:"var(--primary2)",lineHeight:1}}>{s.n}</div>
-                <div style={{fontSize:9,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",fontWeight:800}}>{s.l}</div>
+              <div key={i} className="card" style={{padding:"10px 14px",textAlign:"center"}}>
+                <div style={{fontFamily:"var(--fd)",fontSize:26,color:"var(--primary2)",lineHeight:1}}>{s.n}</div>
+                <div style={{fontSize:11,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".08em",fontWeight:800}}>{s.l}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* ROW 3: WhatsApp + disclaimer */}
-        <div style={{display:"flex",gap:12,alignItems:"center"}}>
+        <div style={{display:"flex",gap:14,alignItems:"center"}}>
           <button onClick={shareApp} className="btn" style={{
-            flex:"0 0 auto",padding:"10px 22px",borderRadius:10,border:"none",
+            flex:"0 0 auto",padding:"12px 26px",borderRadius:12,border:"none",
             background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",
-            fontFamily:"var(--fb)",fontSize:13,fontWeight:700,
-            display:"flex",alignItems:"center",gap:7,
+            fontFamily:"var(--fb)",fontSize:15,fontWeight:700,
+            display:"flex",alignItems:"center",gap:8,
             boxShadow:"0 4px 16px rgba(37,211,102,0.16)"
           }}>
-            {WA(16)} Enviar pra um amigo
+            {WA(18)} Enviar pra um amigo
           </button>
-          <div style={{flex:1,fontSize:11,color:"var(--dim)",lineHeight:1.4}}>
+          <div style={{flex:1,fontSize:13,color:"var(--dim)",lineHeight:1.4}}>
             ⚠️ Triagem de bem-estar — não é diagnóstico médico
-            <span style={{display:"block",fontSize:9,fontFamily:"var(--fm)",letterSpacing:".04em",marginTop:2}}>EYECHECK V4.0 · MobileNetV2 · 18 condições · BBG © 2026</span>
+            <span style={{display:"block",fontSize:11,fontFamily:"var(--fm)",letterSpacing:".04em",marginTop:2}}>EYECHECK V4.0 · MobileNetV2 · 18 condições · BBG © 2026</span>
           </div>
         </div>
       </div>
@@ -806,10 +806,10 @@ function App() {
 
     {/* ═══ FOOTER (only shown in analysis view) ═══ */}
     {img&&(
-      <div style={{marginTop:14,textAlign:"center",paddingBottom:8}}>
-        <div style={{fontSize:11,color:"var(--dim)",lineHeight:1.4}}>
+      <div style={{marginTop:16,textAlign:"center",paddingBottom:10}}>
+        <div style={{fontSize:13,color:"var(--dim)",lineHeight:1.4}}>
           ⚠️ Triagem de bem-estar — não é diagnóstico médico
-          <span style={{display:"block",fontSize:9,fontFamily:"var(--fm)",letterSpacing:".04em",marginTop:2}}>EYECHECK V4.0 · MobileNetV2 · 18 condições · BBG © 2026</span>
+          <span style={{display:"block",fontSize:11,fontFamily:"var(--fm)",letterSpacing:".04em",marginTop:2}}>EYECHECK V4.0 · MobileNetV2 · 18 condições · BBG © 2026</span>
         </div>
       </div>
     )}
