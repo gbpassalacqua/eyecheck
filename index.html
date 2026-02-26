@@ -4,88 +4,273 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>EYECHECK — Seu olho conta a saúde do seu corpo</title>
-  <meta property="og:title" content="EYECHECK — Screening Neural por IA"/>
+  <meta property="og:title" content="EYECHECK — Screening por IA"/>
   <meta property="og:description" content="IA analisa 18 condições de saúde pelo seu olho. Doenças oculares e sistêmicas detectadas com Machine Learning."/>
   <meta property="og:type" content="website"/>
   <meta property="og:image" content="/static/hero-eye.jpg"/>
-  <meta name="description" content="EYECHECK — IA neural que analisa seus olhos e detecta sinais de doenças oculares e sistêmicas."/>
-  <meta name="theme-color" content="#030b14"/>
+  <meta name="description" content="EYECHECK — IA que analisa seus olhos e detecta sinais de doenças oculares e sistêmicas."/>
+  <meta name="theme-color" content="#FAFBFC"/>
   <meta name="mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>👁️</text></svg>"/>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root{--bg:#030b14;--bg2:#0a1628;--bg3:#0d2137;--bg4:#132d47;--acc:#00d4aa;--accg:#00ffcc;--accd:#007a63;--blu:#0ea5e9;--blug:#38bdf8;--un:#00d4aa;--ul:#84cc16;--um:#f59e0b;--uh:#ef4444;--uhg:#ff0040;--t1:#f0f6fc;--t2:#8b9dc3;--t3:#4a5d7a;--glass:rgba(13,33,55,0.72);--gb:rgba(0,212,170,0.12);--gbh:rgba(0,212,170,0.25);--fd:'Orbitron',sans-serif;--fb:'Outfit',sans-serif;--fm:'JetBrains Mono',monospace}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);background-image:url('/static/bg.jpg');background-size:cover;background-position:center;background-attachment:fixed;font-family:var(--fb);color:var(--t1);overflow-x:hidden}
-    body::after{content:'';position:fixed;inset:0;background:linear-gradient(180deg,rgba(3,11,20,.88) 0%,rgba(10,22,40,.72) 50%,rgba(3,11,20,.92) 100%);pointer-events:none;z-index:0}
-    #root{position:relative;z-index:1}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes slideUp{from{opacity:0;transform:translateY(60px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes spinR{to{transform:rotate(-360deg)}}
-    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-    @keyframes eyeGlow{0%,100%{box-shadow:0 0 20px rgba(0,212,170,.25),0 0 40px rgba(0,212,170,.1)}50%{box-shadow:0 0 35px rgba(0,212,170,.5),0 0 70px rgba(0,212,170,.2),0 0 120px rgba(0,212,170,.08)}}
-    @keyframes heroScan{0%{top:5%;opacity:0}8%{opacity:1}92%{opacity:1}100%{top:95%;opacity:0}}
-    @keyframes scanLine{0%{top:-2px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% + 2px);opacity:0}}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-    @keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
-    @keyframes barFill{from{width:0%}}
-    @keyframes logoGlow{0%,100%{box-shadow:0 0 8px rgba(0,212,170,.2)}50%{box-shadow:0 0 18px rgba(0,212,170,.5),0 0 35px rgba(0,212,170,.15)}}
-    @keyframes urgPulse{0%,100%{box-shadow:inset 0 0 0 1px rgba(239,68,68,.3),0 0 15px rgba(239,68,68,.1)}50%{box-shadow:inset 0 0 0 1px rgba(239,68,68,.6),0 0 30px rgba(239,68,68,.2)}}
-    @keyframes marchDash{to{stroke-dashoffset:-16}}
-    @keyframes stagger{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes drift{0%{transform:translateY(0) translateX(0);opacity:0}10%{opacity:.25}90%{opacity:.25}100%{transform:translateY(-100vh) translateX(25px);opacity:0}}
-    @keyframes checkDraw{to{stroke-dashoffset:0}}
-    .bf{transition:width 1.5s cubic-bezier(.22,1,.36,1)}
-    .btn{transition:all .25s;cursor:pointer}.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(0)}
-    .glass{background:var(--glass);border:1px solid var(--gb);border-radius:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-    .glass:hover{border-color:var(--gbh)}
-    .eye-w{position:relative;width:190px;height:190px;margin:0 auto;animation:breathe 4s ease-in-out infinite}
-    .eye-w img{width:174px;height:174px;border-radius:50%;object-fit:cover;position:absolute;top:8px;left:8px;z-index:2;animation:eyeGlow 3s ease-in-out infinite}
-    .eye-r1{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;border-top-color:var(--acc);border-right-color:rgba(0,212,170,.25);animation:spin 2.5s linear infinite;z-index:1}
-    .eye-r2{position:absolute;inset:-6px;border-radius:50%;border:1px solid transparent;border-bottom-color:rgba(0,255,204,.15);border-left-color:rgba(0,255,204,.08);animation:spinR 4s linear infinite;z-index:1}
-    .eye-sc{position:absolute;left:12%;right:12%;height:2px;background:linear-gradient(90deg,transparent,var(--accg),transparent);z-index:3;animation:heroScan 3s ease-in-out infinite;pointer-events:none;box-shadow:0 0 8px var(--acc)}
-    .sb{position:absolute;width:22px;height:22px;border-color:var(--acc);border-style:solid;border-width:0;z-index:11}
-    .sb-tl{top:8px;left:8px;border-top-width:2px;border-left-width:2px}
-    .sb-tr{top:8px;right:8px;border-top-width:2px;border-right-width:2px}
-    .sb-bl{bottom:8px;left:8px;border-bottom-width:2px;border-left-width:2px}
-    .sb-br{bottom:8px;right:8px;border-bottom-width:2px;border-right-width:2px}
-    .s-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 0%,var(--accg) 30%,var(--accg) 70%,transparent 100%);box-shadow:0 0 12px var(--acc),0 0 25px rgba(0,255,204,.25);animation:scanLine 2s ease-in-out infinite;z-index:12}
-    .particle{position:fixed;border-radius:50%;pointer-events:none;z-index:0;background:var(--acc)}
-    @media(max-width:700px){.dual{flex-direction:column !important}.eye-w{width:150px;height:150px}.eye-w img{width:136px;height:136px;top:7px;left:7px}}
+    :root {
+      --bg: #FAFBFC;
+      --bg2: #F4F7FB;
+      --surface: #FFFFFF;
+      --ink: #111827;
+      --text: #1F2937;
+      --muted: #6B7280;
+      --dim: #94A3B8;
+      --border: rgba(17,24,39,0.10);
+      --primary: #2563EB;
+      --primary2: #1A56DB;
+      --secondary: #10B981;
+      --secondary2: #059669;
+      --amber: #F59E0B;
+      --coral: rgba(239,68,68,0.85);
+      --shadow: 0 16px 50px rgba(15,23,42,0.10);
+      --shadow-soft: 0 10px 30px rgba(15,23,42,0.08);
+      --radius: 22px;
+      --grad: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.10));
+      --grad-strong: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(16,185,129,0.90));
+      --fd: "DM Serif Display", serif;
+      --fb: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+      --fm: "JetBrains Mono", ui-monospace, monospace;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family: var(--fb);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ===== MEDICAL GRID BACKGROUND ===== */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(37,99,235,0.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 30%, rgba(16,185,129,0.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 40% 80%, rgba(245,158,11,0.06) 0 2px, transparent 3px),
+        linear-gradient(rgba(37,99,235,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,0.035) 1px, transparent 1px);
+      background-size: 380px 380px, 420px 420px, 460px 460px, 64px 64px, 64px 64px;
+    }
+    .bg-orb {
+      position: fixed; border-radius: 999px; filter: blur(110px); z-index: 0; pointer-events: none;
+      animation: orbFloat 18s ease-in-out infinite;
+    }
+    .bg-orb-1 { width: 520px; height: 520px; background: rgba(37,99,235,0.10); top: -180px; right: -200px; }
+    .bg-orb-2 { width: 460px; height: 460px; background: rgba(16,185,129,0.08); bottom: -180px; left: -200px; animation-delay: -9s; }
+    @keyframes orbFloat { 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(34px,-26px); } }
+
+    /* ===== FLOATING PARTICLES ===== */
+    .particle {
+      position: fixed; width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(37,99,235,0.18); box-shadow: 0 0 0 6px rgba(37,99,235,0.05);
+      animation: drift 14s linear infinite; opacity: 0.7; pointer-events: none; z-index: 0;
+    }
+    .particle.g { background: rgba(16,185,129,0.18); box-shadow: 0 0 0 6px rgba(16,185,129,0.05); }
+    .particle.a { background: rgba(245,158,11,0.16); box-shadow: 0 0 0 6px rgba(245,158,11,0.04); }
+    @keyframes drift { 0%{ transform:translate3d(0,0,0); opacity:.3; } 30%{ opacity:.85; } 100%{ transform:translate3d(0,-140px,0); opacity:.3; } }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slideUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes pulse { 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(0.86); opacity:.45; } }
+    @keyframes pop { 0%{ transform:scale(0); } 60%{ transform:scale(1.06); } 100%{ transform:scale(1); } }
+    @keyframes barFill { from { width:0%; } }
+    @keyframes checkDraw { to { stroke-dashoffset:0; } }
+    @keyframes scanSweep { 0%{ transform:translateY(0); opacity:.2; } 25%{ opacity:.85; } 50%{ transform:translateY(200px); opacity:.9; } 75%{ opacity:.75; } 100%{ transform:translateY(0); opacity:.2; } }
+    @keyframes scanUnder { from{ left:-60%; } to{ left:110%; } }
+    @keyframes ekgDraw { 0%{ stroke-dashoffset:540; opacity:.25; } 35%{ opacity:.9; } 55%{ stroke-dashoffset:0; opacity:.9; } 100%{ stroke-dashoffset:-540; opacity:.25; } }
+    @keyframes stagger { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes breathe { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.02); } }
+    @keyframes bob { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+
+    .bf { transition: width 1.5s cubic-bezier(.22,1,.36,1); }
+    .btn { transition: all .25s; cursor: pointer; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0); }
+    .mono { font-family: var(--fm); }
+
+    /* scan hover effect */
+    .scan-hover { position:relative; overflow:hidden; }
+    .scan-hover::after {
+      content:""; position:absolute; left:-60%; top:0; height:100%; width:60%;
+      background: linear-gradient(90deg, transparent, rgba(16,185,129,0.10), transparent);
+      transform: skewX(-18deg); opacity:0;
+    }
+    .scan-hover:hover::after { opacity:1; animation: scanUnder 0.9s ease-out; }
+
+    /* EKG divider */
+    .ekg-wrap { position:relative; height:48px; max-width:640px; margin:0 auto; z-index:1; padding:0 16px; }
+    .ekg {
+      width:100%; height:48px; border-radius:999px;
+      background: linear-gradient(90deg, rgba(37,99,235,0.06), rgba(16,185,129,0.06));
+      border: 1px solid rgba(17,24,39,0.05);
+      display:flex; align-items:center; justify-content:center; overflow:hidden;
+    }
+    .ekg svg { width:100%; max-width:580px; height:26px; opacity:.8; }
+    .ekg path {
+      stroke: rgba(37,99,235,0.40); stroke-width:2.2; fill:none;
+      stroke-linecap:round; stroke-linejoin:round;
+      stroke-dasharray:540; stroke-dashoffset:540;
+      animation: ekgDraw 2.8s ease-in-out infinite;
+    }
+    .ekg .g path { stroke: rgba(16,185,129,0.38); animation-delay:.25s; opacity:.9; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 10px 26px rgba(15,23,42,0.06);
+      transition: transform .3s, box-shadow .3s, border-color .3s;
+    }
+    .card:hover { border-color: rgba(37,99,235,0.16); box-shadow: var(--shadow-soft); }
+
+    /* ===== SCANNER ===== */
+    .scan-line {
+      position:absolute; top:10%; left:-20%; width:160%; height:3px;
+      background: linear-gradient(90deg, transparent, rgba(16,185,129,0.92), rgba(37,99,235,0.85), transparent);
+      filter: blur(0.1px); opacity:.8;
+      animation: scanSweep 2.4s ease-in-out infinite;
+    }
+    .scanner-brackets .sb {
+      position:absolute; width:22px; height:22px; border-color:var(--primary); border-style:solid; border-width:0; z-index:11;
+    }
+    .sb-tl { top:8px; left:8px; border-top-width:2px; border-left-width:2px; border-radius:4px 0 0 0; }
+    .sb-tr { top:8px; right:8px; border-top-width:2px; border-right-width:2px; border-radius:0 4px 0 0; }
+    .sb-bl { bottom:8px; left:8px; border-bottom-width:2px; border-left-width:2px; border-radius:0 0 0 4px; }
+    .sb-br { bottom:8px; right:8px; border-bottom-width:2px; border-right-width:2px; border-radius:0 0 4px 0; }
+
+    /* ===== DETECT ITEMS ===== */
+    .detect-item {
+      display:flex; gap:12px; background:var(--surface);
+      border:1px solid rgba(17,24,39,0.10); border-radius:16px;
+      padding:14px; transition: transform .25s, box-shadow .25s;
+      box-shadow: 0 8px 20px rgba(15,23,42,0.05); position:relative; overflow:hidden;
+    }
+    .detect-item::before {
+      content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+      background: rgba(37,99,235,0.40); border-radius:4px 0 0 4px;
+    }
+    .detect-item:hover { transform:translateY(-2px); box-shadow:var(--shadow-soft); }
+    .detect-item.systemic::before { background: rgba(16,185,129,0.50); }
+    .detect-item.high::before { background: var(--coral); }
+    .detect-item.moderate::before { background: rgba(245,158,11,0.70); }
+    .detect-item.low::before { background: rgba(16,185,129,0.50); }
+    .detect-item.none::before { background: rgba(37,99,235,0.30); }
+
+    /* severity badge */
+    .severity-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:10px; font-weight:900; letter-spacing:0.12em; text-transform:uppercase;
+      padding:5px 10px; border-radius:999px;
+      border:1px solid rgba(17,24,39,0.08); background:rgba(249,250,251,0.75);
+      color:rgba(17,24,39,0.70); white-space:nowrap;
+    }
+    .severity-badge .dot {
+      width:7px; height:7px; border-radius:50%;
+      background: rgba(16,185,129,0.80); box-shadow: 0 0 0 5px rgba(16,185,129,0.10);
+    }
+    .severity-badge.moderate .dot { background: rgba(245,158,11,0.90); box-shadow: 0 0 0 5px rgba(245,158,11,0.10); }
+    .severity-badge.high .dot { background: var(--coral); box-shadow: 0 0 0 5px rgba(239,68,68,0.08); }
+
+    /* ring gauge */
+    .ring { display:block; }
+    .ring .bg-ring { stroke: rgba(17,24,39,0.08); stroke-width:8; fill:none; }
+    .ring .fg-ring { stroke: var(--primary); stroke-width:8; fill:none; stroke-linecap:round; transition: stroke-dashoffset 1.2s ease; }
+
+    /* dual columns */
+    .dual { display:flex; gap:12px; }
+    @media(max-width:700px) {
+      .dual { flex-direction:column !important; }
+      .hero-eye { width:140px !important; height:140px !important; }
+      .hero-eye img { width:126px !important; height:126px !important; top:7px !important; left:7px !important; }
+    }
   </style>
 </head>
 <body>
+  <div class="bg-grid"></div>
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
   <div id="root"></div>
+
   <script type="text/babel">
-const {useState,useRef,useCallback} = React;
+const {useState, useRef, useCallback} = React;
 
-const urgC = u => u==="high"?"#ef4444":u==="moderate"?"#f59e0b":u==="low"?"#84cc16":"#00d4aa";
+const urgC = u => u==="high"?"#ef4444":u==="moderate"?"#f59e0b":u==="low"?"#10B981":"#2563EB";
 const urgL = u => u==="high"?"ALTA":u==="moderate"?"MODERADA":u==="low"?"BAIXA":"NENHUMA";
-const urgI = u => u==="high"?"🔴":u==="moderate"?"🟡":u==="low"?"🟢":"✅";
-const sevI = l => l==="none"?"✅":l==="low"?"💚":l==="moderate"?"🟡":"🟠";
-const sevC = l => l==="none"||l==="low"?"#00d4aa":l==="moderate"?"#f59e0b":"#ef4444";
+const urgBg = u => u==="high"?"rgba(239,68,68,0.08)":u==="moderate"?"rgba(245,158,11,0.08)":u==="low"?"rgba(16,185,129,0.08)":"rgba(37,99,235,0.06)";
+const urgBorder = u => u==="high"?"rgba(239,68,68,0.18)":u==="moderate"?"rgba(245,158,11,0.18)":u==="low"?"rgba(16,185,129,0.16)":"rgba(37,99,235,0.12)";
+const sevClass = l => l==="high"?"high":l==="moderate"?"moderate":"low";
 
-// Disease grid display
 const GRID_OC = [
-  {i:"⚪",n:"Catarata",c:"#a78bfa"},{i:"🔴",n:"Conjuntivite",c:"#ef4444"},{i:"🩸",n:"Hemorragia",c:"#dc2626"},
-  {i:"🟡",n:"Icterícia",c:"#eab308"},{i:"🔺",n:"Pterígio",c:"#f97316"},{i:"👁️",n:"Ptose",c:"#3b82f6"},
+  {i:"⚪",n:"Catarata",c:"var(--primary)"},{i:"🔴",n:"Conjuntivite",c:"#ef4444"},{i:"🩸",n:"Hemorragia",c:"#dc2626"},
+  {i:"🟡",n:"Icterícia",c:"#eab308"},{i:"🔺",n:"Pterígio",c:"#f97316"},{i:"👁️",n:"Ptose",c:"var(--primary)"},
   {i:"🫧",n:"Terçol",c:"#ec4899"},{i:"🟠",n:"Uveíte",c:"#f59e0b"},
 ];
 const GRID_SY = [
-  {i:"🩸",n:"Anemia",c:"#f87171"},{i:"⭕",n:"Arco Senil",c:"#94a3b8"},{i:"🔵",n:"Esclera Azul",c:"#60a5fa"},
+  {i:"🩸",n:"Anemia",c:"#f87171"},{i:"⭕",n:"Arco Senil",c:"var(--dim)"},{i:"🔵",n:"Esclera Azul",c:"#60a5fa"},
   {i:"💜",n:"Diabetes",c:"#a78bfa"},{i:"👀",n:"Tireoide",c:"#fb923c"},{i:"🟤",n:"Wilson",c:"#d97706"},
-  {i:"💧",n:"Renal",c:"#2dd4bf"},{i:"🟡",n:"Colesterol",c:"#fbbf24"},
+  {i:"💧",n:"Renal",c:"var(--secondary)"},{i:"🟡",n:"Colesterol",c:"#fbbf24"},
 ];
 
 const WA = s => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>;
 
-function App(){
+// EKG SVG divider component
+const EKGDivider = () => (
+  <div className="ekg-wrap" style={{margin:"20px auto"}}>
+    <div className="ekg">
+      <svg viewBox="0 0 600 30" preserveAspectRatio="none">
+        <path d="M0,15 L80,15 L100,15 L120,2 L140,28 L160,15 L200,15 L260,15 L280,2 L300,28 L320,15 L380,15 L440,15 L460,2 L480,28 L500,15 L600,15"/>
+        <g className="g"><path d="M0,15 L80,15 L100,15 L120,2 L140,28 L160,15 L200,15 L260,15 L280,2 L300,28 L320,15 L380,15 L440,15 L460,2 L480,28 L500,15 L600,15"/></g>
+      </svg>
+    </div>
+  </div>
+);
+
+// Floating particles
+const Particles = () => (
+  <>{[
+    {l:"8%",b:"15%",cls:"",d:12,dl:0},{l:"22%",b:"45%",cls:"g",d:16,dl:2},{l:"42%",b:"70%",cls:"",d:11,dl:4},
+    {l:"58%",b:"25%",cls:"a",d:18,dl:1},{l:"75%",b:"55%",cls:"g",d:13,dl:3},{l:"90%",b:"80%",cls:"",d:15,dl:5},
+  ].map((p,i) => (
+    <div key={i} className={`particle ${p.cls}`} style={{left:p.l,bottom:p.b,animationDuration:p.d+"s",animationDelay:p.dl+"s"}}/>
+  ))}</>
+);
+
+// Ring gauge SVG
+const RingGauge = ({pct, size=80, strokeWidth=7, color="var(--primary)"}) => {
+  const r = (size - strokeWidth) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c - (pct / 100) * c;
+  return (
+    <svg className="ring" width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+      <circle className="bg-ring" cx={size/2} cy={size/2} r={r} strokeWidth={strokeWidth}/>
+      <circle className="fg-ring" cx={size/2} cy={size/2} r={r} strokeWidth={strokeWidth}
+        stroke={color} strokeDasharray={c} strokeDashoffset={offset}
+        transform={`rotate(-90 ${size/2} ${size/2})`}/>
+      <text x={size/2} y={size/2} textAnchor="middle" dominantBaseline="central"
+        fontFamily="var(--fm)" fontWeight="700" fontSize={size*.22} fill="var(--ink)">
+        {pct}%
+      </text>
+    </svg>
+  );
+};
+
+function App() {
   const [img,setImg]=useState(null);
   const [b64,setB64]=useState(null);
   const [res,setRes]=useState(null);
@@ -93,7 +278,6 @@ function App(){
   const [err,setErr]=useState(null);
   const [drag,setDrag]=useState(false);
   const [apiReady,setApiReady]=useState(false);
-  const [minScan,setMinScan]=useState(false);
   const fRef=useRef(null);
   const url=typeof window!=="undefined"?window.location.href:"";
 
@@ -119,24 +303,18 @@ function App(){
 
   const analyze=async()=>{
     if(!b64)return;
-    setBusy(true);setErr(null);setRes(null);setMinScan(true);
-    setTimeout(()=>setMinScan(false),2500); // minimum scan animation
+    setBusy(true);setErr(null);setRes(null);
     try{
       const r=await fetch("/predict/full",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:b64})});
       const d=await r.json();if(d.error)throw new Error(d.error);
-      // Wait for minimum scan time
-      const waitForScan=()=>{
-        setRes(d);setBusy(false);
-      };
-      if(document.querySelector('[data-minscan]'))setTimeout(waitForScan,800);
-      else waitForScan();
+      setTimeout(()=>{setRes(d);setBusy(false);},1200);
     }catch(e){setErr("Erro: "+e.message);setBusy(false)}
   };
 
   const reset=()=>{setImg(null);setB64(null);setRes(null);setErr(null)};
 
   const shareApp=()=>{
-    const msg="👁️ EYECHECK — IA Neural que analisa seus olhos e detecta sinais de doenças (diabetes, anemia, colesterol, tireoide) só com uma foto!\n\n🔬 18 condições detectadas com Machine Learning\n📱 Funciona no celular\n\nTesta aí: "+url;
+    const msg="👁️ EYECHECK — IA que analisa seus olhos e detecta sinais de doenças (diabetes, anemia, colesterol, tireoide) só com uma foto!\n\n🔬 18 condições detectadas com Machine Learning\n📱 Funciona no celular\n\nTesta aí: "+url;
     window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(msg),"_blank");
   };
 
@@ -147,7 +325,6 @@ function App(){
     window.open("https://api.whatsapp.com/send?text="+encodeURIComponent(msg),"_blank");
   };
 
-  // Unified result logic
   const getPrimary=()=>{
     if(!res)return null;
     const oc=res.ocular_analysis,sy=res.systemic_analysis;
@@ -170,274 +347,464 @@ function App(){
   const primary=getPrimary();
   const secondary=getSecondary();
 
-  // ─── PARTICLES ───
-  const Particles=()=>(
-    <>{[0,1,2,3,4,5].map(i=>(
-      <div key={i} className="particle" style={{width:i%2===0?2:3,height:i%2===0?2:3,left:(10+i*15)+"%",bottom:"-5%",animation:`drift ${18+i*4}s ${i*3}s linear infinite`,opacity:0}}/>
-    ))}</>
-  );
-
-  return(
-  <div style={{minHeight:"100vh"}}>
+  return (
+  <div style={{minHeight:"100vh",position:"relative",zIndex:1}}>
     <Particles/>
     <input ref={fRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={e=>load(e.target.files?.[0])}/>
 
-    {/* ═══ HEADER ═══ */}
-    <header style={{position:"sticky",top:0,zIndex:50,padding:"12px 20px",display:"flex",alignItems:"center",justifyContent:"space-between",borderBottom:"1px solid rgba(0,212,170,.08)",background:"rgba(3,11,20,.75)",backdropFilter:"blur(24px)",WebkitBackdropFilter:"blur(24px)"}}>
+    {/* ═══ HEADER NAV ═══ */}
+    <header style={{
+      position:"sticky",top:0,zIndex:50,padding:"14px 20px",
+      display:"flex",alignItems:"center",justifyContent:"space-between",
+      borderBottom:"1px solid var(--border)",
+      background:"rgba(250,251,252,0.82)",backdropFilter:"blur(18px)",WebkitBackdropFilter:"blur(18px)"
+    }}>
       <div style={{display:"flex",alignItems:"center",gap:10}}>
-        <div style={{width:34,height:34,borderRadius:10,background:"linear-gradient(135deg,var(--acc),var(--accd))",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"var(--fd)",fontSize:14,fontWeight:900,color:"#fff",animation:"logoGlow 3s ease-in-out infinite"}}>◉</div>
+        <div style={{
+          width:36,height:36,borderRadius:12,
+          background:"var(--grad-strong)",
+          display:"flex",alignItems:"center",justifyContent:"center",
+          fontSize:16,color:"#fff",fontWeight:900
+        }}>◉</div>
         <div>
-          <div style={{fontFamily:"var(--fd)",fontWeight:700,fontSize:14,color:"var(--t1)",letterSpacing:"0.08em"}}>EYECHECK</div>
-          <div style={{fontSize:8,color:"var(--t3)",fontFamily:"var(--fm)",letterSpacing:1}}>V4.0 · NEURAL AI</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:18,color:"var(--ink)",letterSpacing:"-0.02em"}}>EyeCheck</div>
+          <div style={{fontSize:9,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".08em",fontWeight:600}}>V4.0 · AI SCREENING</div>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:8}}>
-        <div style={{background:apiReady?"rgba(0,212,170,.1)":"rgba(245,158,11,.1)",border:"1px solid "+(apiReady?"rgba(0,212,170,.25)":"rgba(245,158,11,.25)"),borderRadius:8,padding:"3px 10px",fontSize:9,fontFamily:"var(--fm)",color:apiReady?"var(--acc)":"var(--um)"}}>{apiReady?"● ONLINE":"◌ INICIANDO..."}</div>
+        <div style={{
+          background:apiReady?"rgba(16,185,129,0.08)":"rgba(245,158,11,0.08)",
+          border:"1px solid "+(apiReady?"rgba(16,185,129,0.18)":"rgba(245,158,11,0.18)"),
+          borderRadius:999,padding:"5px 12px",fontSize:10,fontFamily:"var(--fm)",fontWeight:700,
+          color:apiReady?"var(--secondary2)":"var(--amber)",letterSpacing:".08em",
+          display:"flex",alignItems:"center",gap:6
+        }}>
+          <span style={{
+            width:7,height:7,borderRadius:"50%",
+            background:apiReady?"var(--secondary)":"var(--amber)",
+            boxShadow:apiReady?"0 0 0 5px rgba(16,185,129,0.12)":"0 0 0 5px rgba(245,158,11,0.12)",
+            animation:"pulse 2.2s ease-in-out infinite"
+          }}/>
+          {apiReady?"ONLINE":"INICIANDO..."}
+        </div>
       </div>
     </header>
-
-    <div style={{borderTop:"1px solid rgba(0,212,170,.15)",background:"linear-gradient(90deg,transparent 5%,rgba(0,212,170,.15) 50%,transparent 95%)",height:1,marginTop:-1}}/>
 
     <main style={{maxWidth:640,margin:"0 auto",padding:"28px 16px"}}>
 
     {/* ═══ HOME ═══ */}
     {!img&&(
       <div style={{animation:"fadeUp .7s ease"}}>
-        {/* Hero eye */}
+        {/* Hero section */}
         <div style={{textAlign:"center",marginBottom:28}}>
-          <div className="eye-w" style={{marginBottom:20}}>
-            <div className="eye-r1"/>
-            <div className="eye-r2"/>
-            <img src="/static/hero-eye.jpg" alt="EYECHECK"/>
-            <div className="eye-sc"/>
+          {/* Hero eye with iris scanner effect */}
+          <div className="hero-eye" style={{
+            position:"relative",width:170,height:170,margin:"0 auto 22px",
+            animation:"breathe 4s ease-in-out infinite"
+          }}>
+            <img src="/static/hero-eye.jpg" alt="EYECHECK" style={{
+              width:156,height:156,borderRadius:"50%",objectFit:"cover",
+              position:"absolute",top:7,left:7,zIndex:2,
+              boxShadow:"0 0 0 1px rgba(37,99,235,0.12), 0 0 40px rgba(37,99,235,0.12), 0 0 80px rgba(16,185,129,0.06)"
+            }}/>
+            {/* Crosshair ring */}
+            <div style={{
+              position:"absolute",inset:0,borderRadius:"50%",
+              border:"1.5px dashed rgba(16,185,129,0.35)",
+              boxShadow:"inset 0 0 0 1px rgba(37,99,235,0.12)"
+            }}/>
+            {/* Crosshair lines */}
+            <div style={{position:"absolute",top:"50%",left:"10%",right:"10%",height:1.5,background:"rgba(16,185,129,0.25)",transform:"translateY(-50%)",zIndex:3,borderRadius:999}}/>
+            <div style={{position:"absolute",left:"50%",top:"10%",bottom:"10%",width:1.5,background:"rgba(16,185,129,0.25)",transform:"translateX(-50%)",zIndex:3,borderRadius:999}}/>
+            {/* Scan line */}
+            <div style={{
+              position:"absolute",left:"5%",right:"5%",height:2.5,zIndex:4,
+              background:"linear-gradient(90deg,transparent,rgba(16,185,129,0.9),rgba(37,99,235,0.8),transparent)",
+              animation:"scanSweep 2.4s ease-in-out infinite",top:"15%"
+            }}/>
           </div>
-          <h1 style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--t1)",letterSpacing:"0.05em",marginBottom:6,textShadow:"0 0 30px rgba(0,212,170,.2)"}}>SEU OLHO CONTA A SAÚDE<br/>DO SEU CORPO</h1>
-          <p style={{color:"var(--t2)",fontSize:13,fontWeight:300}}>IA neural analisa 18 condições de saúde pelo seu olho</p>
+
+          {/* Badge */}
+          <div style={{
+            display:"inline-flex",alignItems:"center",gap:8,
+            background:"rgba(37,99,235,0.06)",border:"1px solid rgba(37,99,235,0.14)",
+            borderRadius:999,padding:"7px 16px",fontSize:11,color:"var(--primary2)",
+            fontWeight:800,letterSpacing:".08em",textTransform:"uppercase",marginBottom:16
+          }}>
+            <span style={{width:7,height:7,borderRadius:"50%",background:"var(--secondary)",
+              boxShadow:"0 0 0 5px rgba(16,185,129,0.10)",animation:"pulse 2.2s ease-in-out infinite"}}/>
+            SCREENING POR IA
+          </div>
+
+          <h1 style={{fontFamily:"var(--fd)",fontSize:"clamp(26px, 5vw, 36px)",lineHeight:1.1,color:"var(--ink)",marginBottom:10,letterSpacing:"-0.02em"}}>
+            Seu olho conta a saúde<br/><span style={{background:"linear-gradient(90deg,var(--primary),var(--secondary))",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>do seu corpo</span>
+          </h1>
+          <p style={{color:"var(--muted)",fontSize:14,fontWeight:400,maxWidth:420,margin:"0 auto"}}>IA analisa 18 condições de saúde pelo seu olho — doenças oculares e sinais sistêmicos em segundos.</p>
         </div>
 
-        {/* Upload */}
+        <EKGDivider/>
+
+        {/* Upload card */}
         <div onClick={()=>fRef.current?.click()}
           onDragOver={e=>{e.preventDefault();setDrag(true)}} onDragLeave={()=>setDrag(false)}
           onDrop={e=>{e.preventDefault();setDrag(false);load(e.dataTransfer.files[0])}}
-          className="btn glass"
-          style={{borderColor:drag?"var(--acc)":"var(--gb)",padding:"28px 20px",textAlign:"center",marginBottom:20,cursor:"pointer",transition:"all .3s",boxShadow:drag?"0 0 30px rgba(0,212,170,.15)":"none"}}>
-          <div style={{fontSize:32,marginBottom:8,filter:"drop-shadow(0 0 8px rgba(0,212,170,.3))"}}>📸</div>
-          <div style={{fontFamily:"var(--fd)",fontSize:13,fontWeight:500,color:"var(--t1)",letterSpacing:"0.05em",marginBottom:6}}>INICIAR ANÁLISE</div>
-          <div style={{fontSize:12,color:"var(--t2)",fontWeight:300}}>Câmera no celular · Upload de arquivo</div>
+          className="btn card scan-hover"
+          style={{
+            borderColor:drag?"var(--primary)":"var(--border)",
+            padding:"30px 22px",textAlign:"center",marginTop:20,marginBottom:20,cursor:"pointer",
+            boxShadow:drag?"0 0 0 4px rgba(37,99,235,0.08), var(--shadow-soft)":"0 10px 26px rgba(15,23,42,0.06)",
+            position:"relative",overflow:"hidden"
+          }}>
+          {/* Gradient header strip */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"var(--grad-strong)",borderRadius:"22px 22px 0 0"}}/>
+          <div style={{fontSize:36,marginBottom:10}}>📸</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:20,color:"var(--ink)",marginBottom:6}}>Iniciar Análise</div>
+          <div style={{fontSize:13,color:"var(--muted)",fontWeight:400}}>Tire uma foto ou faça upload de imagem</div>
+          <div style={{marginTop:12,display:"flex",justifyContent:"center",gap:10}}>
+            <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(37,99,235,0.05)",padding:"4px 10px",borderRadius:8,border:"1px solid rgba(37,99,235,0.08)"}}>📱 CÂMERA</span>
+            <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(16,185,129,0.05)",padding:"4px 10px",borderRadius:8,border:"1px solid rgba(16,185,129,0.08)"}}>📁 ARQUIVO</span>
+          </div>
         </div>
 
-        {/* Disease grid */}
-        <div style={{display:"flex",gap:10,marginBottom:16}} className="dual">
-          <div className="glass" style={{flex:1,padding:14}}>
-            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--blu)",marginBottom:8,fontWeight:700,letterSpacing:1}}>🔍 OCULAR · 8 CONDIÇÕES</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+        {/* Disease grids */}
+        <div className="dual" style={{marginBottom:16}}>
+          <div className="card scan-hover" style={{flex:1,padding:16,position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(37,99,235,0.80), rgba(37,99,235,0.40))"}}/>
+            <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:10,fontWeight:700,letterSpacing:".1em"}}>🔍 OCULAR · 8 CONDIÇÕES</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {GRID_OC.map(d=>(
-                <div key={d.n} style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:8,padding:"4px 8px",fontSize:9,color:d.c,display:"flex",alignItems:"center",gap:4}}>
-                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(37,99,235,0.04)",border:"1px solid rgba(37,99,235,0.08)",borderRadius:10,padding:"5px 9px",fontSize:10,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
+                  <span style={{fontSize:12}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
           </div>
-          <div className="glass" style={{flex:1,padding:14}}>
-            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"#f97316",marginBottom:8,fontWeight:700,letterSpacing:1}}>🫀 SISTÊMICO · 8 CONDIÇÕES</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
+          <div className="card scan-hover" style={{flex:1,padding:16,position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(16,185,129,0.80), rgba(16,185,129,0.40))"}}/>
+            <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:10,fontWeight:700,letterSpacing:".1em"}}>🫀 SISTÊMICO · 8 CONDIÇÕES</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
               {GRID_SY.map(d=>(
-                <div key={d.n} style={{background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.06)",borderRadius:8,padding:"4px 8px",fontSize:9,color:d.c,display:"flex",alignItems:"center",gap:4}}>
-                  <span style={{fontSize:11}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.08)",borderRadius:10,padding:"5px 9px",fontSize:10,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
+                  <span style={{fontSize:12}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Share */}
-        <button onClick={shareApp} className="btn" style={{width:"100%",padding:"14px",borderRadius:14,border:"none",background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",fontFamily:"var(--fb)",fontSize:14,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:10,boxShadow:"0 4px 24px rgba(37,211,102,.25)"}}>
+        {/* Stats bar */}
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
+          {[
+            {n:"18",l:"Condições"},
+            {n:"2",l:"Modelos IA"},
+            {n:"<3s",l:"Análise"},
+          ].map((s,i)=>(
+            <div key={i} className="card" style={{padding:"16px 12px",textAlign:"center",position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",bottom:0,left:"-20%",right:"-20%",height:50,background:"linear-gradient(90deg,rgba(37,99,235,0.06),rgba(16,185,129,0.05))",transform:"rotate(-3deg)",opacity:.5}}/>
+              <div style={{fontFamily:"var(--fd)",fontSize:28,color:"var(--primary2)",position:"relative",zIndex:1}}>{s.n}</div>
+              <div style={{fontSize:9,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".14em",fontWeight:800,position:"relative",zIndex:1}}>{s.l}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* WhatsApp share */}
+        <button onClick={shareApp} className="btn" style={{
+          width:"100%",padding:"14px",borderRadius:14,border:"none",
+          background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",
+          fontFamily:"var(--fb)",fontSize:14,fontWeight:700,
+          display:"flex",alignItems:"center",justifyContent:"center",gap:10,
+          boxShadow:"0 10px 30px rgba(37,211,102,0.20)"
+        }}>
           {WA(18)} Enviar pra um amigo
         </button>
       </div>
     )}
 
-    {/* ═══ ANALYSIS ═══ */}
+    {/* ═══ ANALYSIS VIEW ═══ */}
     {img&&(
       <div style={{animation:"fadeUp .5s ease"}}>
         {/* Scanner frame */}
-        <div style={{position:"relative",borderRadius:16,overflow:"hidden",border:"1px solid rgba(0,212,170,.15)",background:"#000",marginBottom:14}}>
+        <div className="card" style={{position:"relative",borderRadius:20,overflow:"hidden",marginBottom:14,padding:0}}>
+          {/* Top gradient strip */}
+          <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"var(--grad-strong)",zIndex:10}}/>
           {img&&img!=="ok"?(
-            <img src={img} alt="Eye" style={{width:"100%",display:"block",maxHeight:320,objectFit:"contain"}}/>
+            <img src={img} alt="Eye" style={{width:"100%",display:"block",maxHeight:320,objectFit:"contain",background:"#0B1220"}}/>
           ):(
-            <div style={{width:"100%",height:160,display:"flex",alignItems:"center",justifyContent:"center"}}>
-              <span style={{fontSize:11,color:"var(--acc)",fontFamily:"var(--fm)"}}>IMAGEM CARREGADA</span>
+            <div style={{width:"100%",height:160,display:"flex",alignItems:"center",justifyContent:"center",background:"#0B1220"}}>
+              <span style={{fontSize:11,color:"var(--secondary)",fontFamily:"var(--fm)"}}>IMAGEM CARREGADA</span>
             </div>
           )}
           {/* Scanner overlay */}
           {busy&&(
-            <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.35)"}}>
-              <div className="sb sb-tl"/><div className="sb sb-tr"/><div className="sb sb-bl"/><div className="sb sb-br"/>
-              <div className="s-line"/>
+            <div style={{position:"absolute",inset:0,background:"rgba(11,18,32,.40)"}}>
+              <div className="scanner-brackets">
+                <div className="sb sb-tl"/><div className="sb sb-tr"/><div className="sb sb-bl"/><div className="sb sb-br"/>
+              </div>
+              <div className="scan-line"/>
               <div style={{position:"absolute",bottom:16,left:0,right:0,textAlign:"center"}}>
-                <div style={{display:"inline-block",background:"rgba(3,11,20,.85)",borderRadius:10,padding:"8px 18px",fontFamily:"var(--fm)",fontSize:10,color:"var(--acc)",animation:"pulse 1.5s infinite",letterSpacing:1,border:"1px solid rgba(0,212,170,.2)"}}>
+                <div style={{
+                  display:"inline-block",background:"rgba(255,255,255,0.92)",borderRadius:12,
+                  padding:"8px 18px",fontFamily:"var(--fm)",fontSize:10,
+                  color:"var(--primary)",letterSpacing:".08em",fontWeight:700,
+                  border:"1px solid rgba(37,99,235,0.14)",
+                  boxShadow:"0 10px 30px rgba(15,23,42,0.12)"
+                }}>
                   ANALISANDO PADRÕES OCULARES...
                 </div>
               </div>
             </div>
           )}
-          {/* Result badge on image */}
+          {/* Result badge */}
           {res&&primary&&!bothNormal&&(
-            <div style={{position:"absolute",top:10,right:10,background:urgC(primary.urgency),color:"#fff",borderRadius:8,padding:"4px 10px",fontSize:9,fontWeight:700,fontFamily:"var(--fm)",letterSpacing:.5}}>{primary.top_prediction_pt?.toUpperCase()}</div>
+            <div style={{
+              position:"absolute",top:12,right:12,
+              background:urgC(primary.urgency),color:"#fff",borderRadius:10,
+              padding:"5px 12px",fontSize:10,fontWeight:800,fontFamily:"var(--fm)",letterSpacing:".06em",
+              boxShadow:"0 4px 12px rgba(0,0,0,0.15)"
+            }}>{primary.top_prediction_pt?.toUpperCase()}</div>
           )}
         </div>
 
         {/* Action buttons */}
-        <div style={{display:"flex",gap:8,marginBottom:16}}>
+        <div style={{display:"flex",gap:10,marginBottom:16}}>
           {!busy&&!res&&(
-            <button onClick={apiReady?analyze:undefined} className="btn" style={{flex:1,padding:"13px",borderRadius:12,border:"none",background:apiReady?"linear-gradient(135deg,var(--acc),var(--accd))":"rgba(255,255,255,.08)",color:apiReady?"#000":"var(--t3)",fontFamily:"var(--fd)",fontSize:12,fontWeight:700,letterSpacing:"0.05em",boxShadow:apiReady?"0 4px 24px rgba(0,212,170,.25)":"none",opacity:apiReady?1:.6}}>{apiReady?"ANALISAR":"INICIANDO..."}</button>
+            <button onClick={apiReady?analyze:undefined} className="btn" style={{
+              flex:1,padding:"14px",borderRadius:14,border:"none",
+              background:apiReady?"var(--grad-strong)":"rgba(37,99,235,0.08)",
+              color:apiReady?"#fff":"var(--dim)",
+              fontFamily:"var(--fb)",fontSize:13,fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",
+              boxShadow:apiReady?"0 10px 30px rgba(37,99,235,0.18)":"none",opacity:apiReady?1:.6
+            }}>{apiReady?"Analisar":"Iniciando..."}</button>
           )}
-          <button onClick={reset} className="btn" style={{flex:res?1:0,minWidth:44,padding:"13px",borderRadius:12,border:"1px solid rgba(255,255,255,.1)",background:"rgba(255,255,255,.04)",color:"var(--t2)",fontFamily:"var(--fb)",fontSize:12,fontWeight:500}}>{res?"Nova Foto":"✕"}</button>
+          <button onClick={reset} className="btn" style={{
+            flex:res?1:0,minWidth:44,padding:"14px",borderRadius:14,
+            border:"1px solid var(--border)",background:"var(--surface)",color:"var(--muted)",
+            fontFamily:"var(--fb)",fontSize:13,fontWeight:600
+          }}>{res?"Nova Foto":"✕"}</button>
           {res&&(
-            <button onClick={shareResult} className="btn" style={{flex:1,padding:"13px",borderRadius:12,border:"none",background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",fontFamily:"var(--fb)",fontSize:12,fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
-              {WA(14)} Compartilhar
+            <button onClick={shareResult} className="btn" style={{
+              flex:1,padding:"14px",borderRadius:14,border:"none",
+              background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",
+              fontFamily:"var(--fb)",fontSize:13,fontWeight:700,
+              display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+              boxShadow:"0 10px 24px rgba(37,211,102,0.18)"
+            }}>
+              {WA(15)} Compartilhar
             </button>
           )}
         </div>
 
         {/* ═══ BOTH NORMAL ═══ */}
         {bothNormal&&(
-          <div className="glass" style={{textAlign:"center",padding:"30px 20px",marginBottom:16,borderColor:"rgba(0,212,170,.3)",animation:"pop .5s ease",boxShadow:"0 0 40px rgba(0,212,170,.1)"}}>
-            <svg width="64" height="64" viewBox="0 0 64 64" style={{margin:"0 auto 12px"}}>
-              <circle cx="32" cy="32" r="28" fill="none" stroke="var(--acc)" strokeWidth="2.5" opacity=".3"/>
-              <path d="M20 32 L28 40 L44 24" fill="none" stroke="var(--acc)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{animation:"checkDraw .8s .3s forwards"}}/>
+          <div className="card" style={{
+            textAlign:"center",padding:"34px 22px",marginBottom:16,
+            borderColor:"rgba(16,185,129,0.20)",animation:"pop .5s ease",
+            boxShadow:"0 10px 40px rgba(16,185,129,0.08)",position:"relative",overflow:"hidden"
+          }}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"linear-gradient(90deg,var(--secondary),var(--primary))"}}/>
+            <svg width="64" height="64" viewBox="0 0 64 64" style={{margin:"0 auto 14px"}}>
+              <circle cx="32" cy="32" r="28" fill="none" stroke="var(--secondary)" strokeWidth="2.5" opacity=".25"/>
+              <path d="M20 32 L28 40 L44 24" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{animation:"checkDraw .8s .3s forwards"}}/>
             </svg>
-            <div style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--acc)",letterSpacing:"0.08em",marginBottom:6}}>OLHOS SAUDÁVEIS</div>
-            <div style={{fontSize:13,color:"var(--t2)",fontWeight:300}}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
+            <div style={{fontFamily:"var(--fd)",fontSize:24,color:"var(--secondary2)",marginBottom:6}}>Olhos Saudáveis</div>
+            <div style={{fontSize:14,color:"var(--muted)",fontWeight:400}}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
           </div>
         )}
 
         {/* ═══ COMBINED URGENCY ═══ */}
         {res&&!bothNormal&&(
           <div style={{marginBottom:14,animation:"slideUp .6s ease"}}>
-            <div className="glass" style={{padding:"12px 16px",display:"flex",alignItems:"center",gap:12,borderColor:urgC(res.combined_urgency)+"40",animation:res.combined_urgency==="high"?"urgPulse 2s infinite":"none"}}>
-              <span style={{fontSize:22}}>{urgI(res.combined_urgency)}</span>
-              <div style={{flex:1}}>
-                <div style={{fontSize:8,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),letterSpacing:1.5,fontWeight:700}}>URGÊNCIA</div>
-                <div style={{fontSize:14,fontWeight:600,color:urgC(res.combined_urgency)}}>{urgL(res.combined_urgency)}</div>
+            <div className="card" style={{
+              padding:"14px 18px",display:"flex",alignItems:"center",gap:14,
+              background:urgBg(res.combined_urgency),
+              borderColor:urgBorder(res.combined_urgency)
+            }}>
+              <div style={{
+                width:42,height:42,borderRadius:14,
+                background:"rgba(255,255,255,0.75)",border:"1px solid "+urgBorder(res.combined_urgency),
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,
+                boxShadow:"0 8px 20px rgba(15,23,42,0.06)"
+              }}>
+                {res.combined_urgency==="high"?"🔴":res.combined_urgency==="moderate"?"🟡":"🟢"}
               </div>
-              <div style={{background:urgC(res.combined_urgency)+"18",borderRadius:8,padding:"4px 10px",fontSize:9,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),border:"1px solid "+urgC(res.combined_urgency)+"30"}}>{primary?.type==="ocular"?"OCULAR":"SISTÊMICO"}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:10,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),letterSpacing:".12em",fontWeight:700}}>URGÊNCIA</div>
+                <div style={{fontSize:16,fontWeight:800,color:urgC(res.combined_urgency)}}>{urgL(res.combined_urgency)}</div>
+              </div>
+              <div className="severity-badge" style={{background:"rgba(255,255,255,0.70)"}}>
+                <span className="dot" style={{background:urgC(res.combined_urgency),boxShadow:"0 0 0 5px "+urgBorder(res.combined_urgency)}}/>
+                {primary?.type==="ocular"?"OCULAR":"SISTÊMICO"}
+              </div>
             </div>
           </div>
         )}
 
         {/* ═══ PRIMARY DIAGNOSIS ═══ */}
         {res&&primary&&!bothNormal&&(
-          <div className="glass" style={{padding:18,marginBottom:14,borderColor:urgC(primary.urgency)+"30",animation:"slideUp .7s ease"}}>
-            <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1.5,marginBottom:10}}>● DIAGNÓSTICO PRINCIPAL</div>
-
-            <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
-              <div style={{fontSize:36}}>{primary.type==="systemic"?"🫀":"🔍"}</div>
-              <div style={{flex:1}}>
-                <div style={{fontFamily:"var(--fd)",fontSize:18,fontWeight:700,color:"var(--t1)",letterSpacing:"0.03em"}}>{primary.top_prediction_pt}</div>
-                <div style={{fontSize:11,color:"var(--t2)",marginTop:2}}>{primary.type==="systemic"?"Análise Sistêmica":"Análise Ocular"}</div>
-              </div>
-              <div style={{fontFamily:"var(--fm)",fontSize:28,fontWeight:700,color:urgC(primary.urgency)}}>{Math.round((primary.confidence||0)*100)}%</div>
-            </div>
-
-            {/* Confidence bar */}
-            <div style={{height:5,borderRadius:3,background:"rgba(255,255,255,.06)",marginBottom:14}}>
-              <div className="bf" style={{height:"100%",borderRadius:3,background:`linear-gradient(90deg,${urgC(primary.urgency)},${urgC(primary.urgency)}aa)`,width:Math.round((primary.confidence||0)*100)+"%",animation:"barFill 1.5s ease",boxShadow:`0 0 10px ${urgC(primary.urgency)}44`}}/>
-            </div>
-
-            {/* Explanation */}
-            {primary.explanation&&(
-              <div style={{background:"rgba(255,255,255,.03)",borderRadius:12,padding:13,marginBottom:12,border:"1px solid rgba(255,255,255,.05)"}}>
-                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,marginBottom:5}}>O QUE É ISSO?</div>
-                <div style={{fontSize:12,color:"var(--t1)",lineHeight:1.6,fontWeight:300}}>{primary.explanation}</div>
-                {primary.severity&&(
-                  <div style={{marginTop:8,display:"flex",alignItems:"center",gap:6}}>
-                    <span style={{fontSize:13}}>{sevI(primary.severity_level)}</span>
-                    <span style={{fontSize:11,fontWeight:500,color:sevC(primary.severity_level)}}>{primary.severity}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Systemic alert */}
-            {primary.systemic_alert&&(
-              <div style={{background:"rgba(249,115,22,.06)",borderRadius:12,padding:12,marginBottom:12,border:"1px solid rgba(249,115,22,.15)"}}>
-                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"#f97316",letterSpacing:1,fontWeight:700,marginBottom:4}}>⚠ SINAL SISTÊMICO</div>
-                <div style={{fontSize:11,color:"#fdba74",lineHeight:1.5}}>
-                  <strong>Doença:</strong> {primary.systemic_alert.disease}<br/>
-                  <strong>Sinal:</strong> {primary.systemic_alert.sign}
+          <div className="card detect-item" style={{
+            padding:0,marginBottom:14,animation:"slideUp .7s ease",
+            flexDirection:"column",gap:0,borderColor:urgBorder(primary.urgency),
+            borderLeftWidth:4,borderLeftColor:urgC(primary.urgency)
+          }}>
+            {/* Header with gradient */}
+            <div style={{
+              padding:"16px 18px 14px",
+              background:primary.type==="systemic"?"linear-gradient(135deg,rgba(16,185,129,0.06),rgba(16,185,129,0.02))":"linear-gradient(135deg,rgba(37,99,235,0.06),rgba(37,99,235,0.02))",
+              borderBottom:"1px solid var(--border)"
+            }}>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
+                <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".12em",fontWeight:700}}>● DIAGNÓSTICO PRINCIPAL</div>
+                <div className={"severity-badge "+sevClass(primary.severity_level)}>
+                  <span className="dot"/>
+                  {primary.severity_level==="high"?"ALTA":primary.severity_level==="moderate"?"MÉDIA":"BAIXA"}
                 </div>
               </div>
-            )}
+              <div style={{display:"flex",alignItems:"center",gap:14}}>
+                <div style={{
+                  width:48,height:48,borderRadius:16,
+                  background:primary.type==="systemic"?"rgba(16,185,129,0.08)":"rgba(37,99,235,0.08)",
+                  border:"1px solid "+(primary.type==="systemic"?"rgba(16,185,129,0.14)":"rgba(37,99,235,0.14)"),
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0
+                }}>{primary.type==="systemic"?"🫀":"🔍"}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontFamily:"var(--fd)",fontSize:22,color:"var(--ink)"}}>{primary.top_prediction_pt}</div>
+                  <div style={{fontSize:11,color:"var(--muted)",marginTop:2,fontWeight:500}}>{primary.type==="systemic"?"Análise Sistêmica":"Análise Ocular"}</div>
+                </div>
+                <RingGauge pct={Math.round((primary.confidence||0)*100)} size={68} strokeWidth={6}
+                  color={urgC(primary.urgency)}/>
+              </div>
+            </div>
 
-            {/* Findings */}
-            {primary.findings&&(
-              <div style={{marginBottom:12}}>
-                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,marginBottom:6}}>ACHADOS</div>
-                {primary.findings.map((f,i)=>(
-                  <div key={i} style={{display:"flex",gap:6,marginBottom:3,fontSize:11,color:"var(--t2)",animation:`stagger ${.3+i*.08}s ease both`}}>
-                    <span style={{color:"var(--acc)"}}>→</span><span>{f}</span>
+            {/* Body */}
+            <div style={{padding:"16px 18px"}}>
+              {/* Explanation */}
+              {primary.explanation&&(
+                <div style={{
+                  background:"var(--bg2)",borderRadius:14,padding:14,marginBottom:14,
+                  border:"1px solid rgba(17,24,39,0.06)"
+                }}>
+                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",marginBottom:6,fontWeight:700}}>O QUE É ISSO?</div>
+                  <div style={{fontSize:13,color:"var(--text)",lineHeight:1.7,fontWeight:400}}>{primary.explanation}</div>
+                  {primary.severity&&(
+                    <div style={{marginTop:10,display:"flex",alignItems:"center",gap:6}}>
+                      <span style={{fontSize:12}}>{primary.severity_level==="none"?"✅":primary.severity_level==="low"?"💚":primary.severity_level==="moderate"?"🟡":"🟠"}</span>
+                      <span style={{fontSize:12,fontWeight:600,color:urgC(primary.severity_level==="high"?"high":primary.severity_level==="moderate"?"moderate":"low")}}>{primary.severity}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Systemic alert */}
+              {primary.systemic_alert&&(
+                <div style={{
+                  background:"rgba(245,158,11,0.05)",borderRadius:14,padding:13,marginBottom:14,
+                  border:"1px solid rgba(245,158,11,0.14)"
+                }}>
+                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--amber)",letterSpacing:".1em",fontWeight:700,marginBottom:4}}>⚠ SINAL SISTÊMICO</div>
+                  <div style={{fontSize:12,color:"var(--text)",lineHeight:1.6}}>
+                    <strong>Doença:</strong> {primary.systemic_alert.disease}<br/>
+                    <strong>Sinal:</strong> {primary.systemic_alert.sign}
                   </div>
-                ))}
-              </div>
-            )}
+                </div>
+              )}
 
-            {/* Recommendation */}
-            {primary.recommendation&&(
-              <div style={{background:"rgba(0,212,170,.05)",borderRadius:10,padding:12,border:"1px solid rgba(0,212,170,.1)"}}>
-                <div style={{fontSize:12,color:"var(--acc)",lineHeight:1.5}}>💊 {primary.recommendation}</div>
-              </div>
-            )}
+              {/* Findings */}
+              {primary.findings&&(
+                <div style={{marginBottom:14}}>
+                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",marginBottom:8,fontWeight:700}}>ACHADOS</div>
+                  {primary.findings.map((f,i)=>(
+                    <div key={i} style={{
+                      display:"flex",gap:8,marginBottom:5,fontSize:12,color:"var(--text)",
+                      animation:`stagger ${.3+i*.08}s ease both`
+                    }}>
+                      <span style={{
+                        width:18,height:18,borderRadius:999,flexShrink:0,
+                        background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.14)",
+                        display:"flex",alignItems:"center",justifyContent:"center",
+                        fontSize:8,color:"var(--secondary2)",fontWeight:900,marginTop:1
+                      }}>✓</span>
+                      <span style={{lineHeight:1.5}}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Recommendation */}
+              {primary.recommendation&&(
+                <div style={{
+                  background:"linear-gradient(135deg,rgba(37,99,235,0.05),rgba(16,185,129,0.04))",
+                  borderRadius:14,padding:13,
+                  border:"1px solid rgba(37,99,235,0.10)"
+                }}>
+                  <div style={{fontSize:13,color:"var(--primary2)",lineHeight:1.6,fontWeight:500}}>💊 {primary.recommendation}</div>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
         {/* ═══ SECONDARY ═══ */}
         {secondary&&(
-          <div className="glass" style={{padding:14,marginBottom:14,animation:"slideUp .8s ease"}}>
-            <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1.5,marginBottom:8}}>● ACHADO SECUNDÁRIO</div>
-            <div style={{display:"flex",alignItems:"center",gap:12}}>
-              <span style={{fontSize:24}}>{secondary.type==="systemic"?"🫀":"🔍"}</span>
-              <div style={{flex:1}}>
-                <div style={{fontSize:14,fontWeight:600,color:"var(--t1)"}}>{secondary.top_prediction_pt}</div>
-                <div style={{fontSize:10,color:"var(--t2)"}}>{secondary.type==="systemic"?"Sistêmico":"Ocular"} · {secondary.explanation?.split(".")[0]}.</div>
+          <div className="card" style={{
+            padding:0,marginBottom:14,animation:"slideUp .8s ease",
+            position:"relative",overflow:"hidden",
+            borderLeftWidth:4,borderLeftStyle:"solid",
+            borderLeftColor:secondary.type==="systemic"?"var(--secondary)":"var(--primary)"
+          }}>
+            <div style={{padding:"14px 18px"}}>
+              <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".12em",marginBottom:10,fontWeight:700}}>● ACHADO SECUNDÁRIO</div>
+              <div style={{display:"flex",alignItems:"center",gap:12}}>
+                <div style={{
+                  width:42,height:42,borderRadius:14,
+                  background:secondary.type==="systemic"?"rgba(16,185,129,0.08)":"rgba(37,99,235,0.08)",
+                  border:"1px solid "+(secondary.type==="systemic"?"rgba(16,185,129,0.14)":"rgba(37,99,235,0.14)"),
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0
+                }}>{secondary.type==="systemic"?"🫀":"🔍"}</div>
+                <div style={{flex:1}}>
+                  <div style={{fontSize:16,fontWeight:800,color:"var(--ink)"}}>{secondary.top_prediction_pt}</div>
+                  <div style={{fontSize:11,color:"var(--muted)",fontWeight:400}}>{secondary.type==="systemic"?"Sistêmico":"Ocular"} · {secondary.explanation?.split(".")[0]}.</div>
+                </div>
+                <RingGauge pct={Math.round((secondary.confidence||0)*100)} size={56} strokeWidth={5}
+                  color={urgC(secondary.urgency)}/>
               </div>
-              <div style={{fontFamily:"var(--fm)",fontSize:18,fontWeight:700,color:urgC(secondary.urgency)}}>{Math.round((secondary.confidence||0)*100)}%</div>
+              {secondary.recommendation&&(
+                <div style={{marginTop:12,fontSize:12,color:"var(--primary2)",paddingLeft:54,fontWeight:500}}>💊 {secondary.recommendation}</div>
+              )}
             </div>
-            {secondary.recommendation&&(
-              <div style={{marginTop:10,fontSize:11,color:"var(--acc)",paddingLeft:36}}>💊 {secondary.recommendation}</div>
-            )}
           </div>
         )}
 
-        {/* Scores (expandable) */}
+        <EKGDivider/>
+
+        {/* All scores (expandable) */}
         {res&&!bothNormal&&(
-          <details className="glass" style={{padding:14,marginBottom:14}}>
-            <summary style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--t3)",letterSpacing:1,cursor:"pointer",outline:"none"}}>TODAS AS PROBABILIDADES</summary>
-            <div style={{marginTop:10,display:"flex",gap:10}} className="dual">
+          <details className="card" style={{padding:16,marginBottom:14,marginTop:8}}>
+            <summary style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",cursor:"pointer",outline:"none",fontWeight:700}}>TODAS AS PROBABILIDADES</summary>
+            <div style={{marginTop:12,display:"flex",gap:12}} className="dual">
               <div style={{flex:1}}>
-                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--blu)",marginBottom:6}}>OCULAR</div>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:8,fontWeight:700,letterSpacing:".1em"}}>OCULAR</div>
                 {res.ocular_analysis?.all_scores&&Object.entries(res.ocular_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
-                  <div key={k} style={{marginBottom:3}}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
-                      <span style={{color:"var(--t2)"}}>{k}</span>
-                      <span style={{fontFamily:"var(--fm)",color:"var(--t3)"}}>{Math.round(v*100)}%</span>
+                  <div key={k} style={{marginBottom:4}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10}}>
+                      <span style={{color:"var(--text)",fontWeight:500}}>{k}</span>
+                      <span style={{fontFamily:"var(--fm)",color:"var(--dim)"}}>{Math.round(v*100)}%</span>
                     </div>
-                    <div style={{height:2,borderRadius:1,background:"rgba(255,255,255,.05)"}}>
-                      <div className="bf" style={{height:"100%",borderRadius:1,background:"var(--blu)",width:(v*100)+"%",opacity:v>.03?1:.2}}/>
+                    <div style={{height:3,borderRadius:2,background:"rgba(37,99,235,0.08)"}}>
+                      <div className="bf" style={{height:"100%",borderRadius:2,background:"var(--primary)",width:(v*100)+"%",opacity:v>.03?1:.15}}/>
                     </div>
                   </div>
                 ))}
               </div>
               <div style={{flex:1}}>
-                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"#f97316",marginBottom:6}}>SISTÊMICO</div>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:8,fontWeight:700,letterSpacing:".1em"}}>SISTÊMICO</div>
                 {res.systemic_analysis?.all_scores&&Object.entries(res.systemic_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
-                  <div key={k} style={{marginBottom:3}}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
-                      <span style={{color:"var(--t2)"}}>{k}</span>
-                      <span style={{fontFamily:"var(--fm)",color:"var(--t3)"}}>{Math.round(v*100)}%</span>
+                  <div key={k} style={{marginBottom:4}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10}}>
+                      <span style={{color:"var(--text)",fontWeight:500}}>{k}</span>
+                      <span style={{fontFamily:"var(--fm)",color:"var(--dim)"}}>{Math.round(v*100)}%</span>
                     </div>
-                    <div style={{height:2,borderRadius:1,background:"rgba(255,255,255,.05)"}}>
-                      <div className="bf" style={{height:"100%",borderRadius:1,background:"#f97316",width:(v*100)+"%",opacity:v>.03?1:.2}}/>
+                    <div style={{height:3,borderRadius:2,background:"rgba(16,185,129,0.08)"}}>
+                      <div className="bf" style={{height:"100%",borderRadius:2,background:"var(--secondary)",width:(v*100)+"%",opacity:v>.03?1:.15}}/>
                     </div>
                   </div>
                 ))}
@@ -446,16 +813,20 @@ function App(){
           </details>
         )}
 
-        {err&&<div className="glass" style={{padding:12,marginBottom:14,borderColor:"rgba(239,68,68,.2)",textAlign:"center",fontSize:12,color:"#f87171"}}>{err}</div>}
+        {err&&<div className="card" style={{padding:14,marginBottom:14,borderColor:"rgba(239,68,68,0.18)",textAlign:"center",fontSize:13,color:"#ef4444",background:"rgba(239,68,68,0.04)"}}>{err}</div>}
       </div>
     )}
 
     {/* ═══ FOOTER ═══ */}
-    <div style={{marginTop:32,borderTop:"1px solid rgba(0,212,170,.08)",paddingTop:16,textAlign:"center"}}>
-      <div style={{background:"linear-gradient(90deg,transparent 10%,rgba(0,212,170,.1) 50%,transparent 90%)",height:1,marginBottom:16}}/>
-      <div style={{fontSize:10,color:"var(--t3)",fontFamily:"var(--fm)",lineHeight:1.8,letterSpacing:.5}}>
-        ⚠️ TRIAGEM DE BEM-ESTAR — NÃO É DIAGNÓSTICO<br/>
-        <span style={{color:"var(--t3)",fontSize:8}}>EYECHECK V4.0 · MobileNetV2 TFLite · 18 condições · BBG © 2026</span>
+    <div style={{marginTop:36}}>
+      <EKGDivider/>
+      <div style={{textAlign:"center",paddingTop:12,paddingBottom:8}}>
+        <div style={{fontSize:11,color:"var(--muted)",fontWeight:500,lineHeight:1.8}}>
+          ⚠️ Triagem de bem-estar — não é diagnóstico médico
+        </div>
+        <div style={{fontSize:9,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".08em",marginTop:4}}>
+          EYECHECK V4.0 · MobileNetV2 TFLite · 18 condições · BBG © 2026
+        </div>
       </div>
     </div>
 
