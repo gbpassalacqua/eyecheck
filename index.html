@@ -37,7 +37,7 @@
       --coral: rgba(239,68,68,0.85);
       --shadow: 0 16px 50px rgba(15,23,42,0.10);
       --shadow-soft: 0 10px 30px rgba(15,23,42,0.08);
-      --radius: 22px;
+      --radius: 16px;
       --grad: linear-gradient(135deg, rgba(37,99,235,0.12), rgba(16,185,129,0.10));
       --grad-strong: linear-gradient(135deg, rgba(37,99,235,0.95), rgba(16,185,129,0.90));
       --fd: "DM Serif Display", serif;
@@ -113,14 +113,14 @@
     .scan-hover:hover::after { opacity:1; animation: scanUnder 0.9s ease-out; }
 
     /* EKG divider */
-    .ekg-wrap { position:relative; height:48px; max-width:640px; margin:0 auto; z-index:1; padding:0 16px; }
+    .ekg-wrap { position:relative; height:32px; max-width:640px; margin:0 auto; z-index:1; padding:0 16px; }
     .ekg {
-      width:100%; height:48px; border-radius:999px;
+      width:100%; height:32px; border-radius:999px;
       background: linear-gradient(90deg, rgba(37,99,235,0.06), rgba(16,185,129,0.06));
       border: 1px solid rgba(17,24,39,0.05);
       display:flex; align-items:center; justify-content:center; overflow:hidden;
     }
-    .ekg svg { width:100%; max-width:580px; height:26px; opacity:.8; }
+    .ekg svg { width:100%; max-width:580px; height:20px; opacity:.8; }
     .ekg path {
       stroke: rgba(37,99,235,0.40); stroke-width:2.2; fill:none;
       stroke-linecap:round; stroke-linejoin:round;
@@ -134,10 +134,10 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      box-shadow: 0 10px 26px rgba(15,23,42,0.06);
+      box-shadow: 0 4px 16px rgba(15,23,42,0.05);
       transition: transform .3s, box-shadow .3s, border-color .3s;
     }
-    .card:hover { border-color: rgba(37,99,235,0.16); box-shadow: var(--shadow-soft); }
+    .card:hover { border-color: rgba(37,99,235,0.16); box-shadow: 0 8px 24px rgba(15,23,42,0.08); }
 
     /* ===== SCANNER ===== */
     .scan-line {
@@ -193,11 +193,9 @@
     .ring .fg-ring { stroke: var(--primary); stroke-width:8; fill:none; stroke-linecap:round; transition: stroke-dashoffset 1.2s ease; }
 
     /* dual columns */
-    .dual { display:flex; gap:12px; }
+    .dual { display:flex; gap:8px; }
     @media(max-width:700px) {
       .dual { flex-direction:column !important; }
-      .hero-eye { width:140px !important; height:140px !important; }
-      .hero-eye img { width:126px !important; height:126px !important; top:7px !important; left:7px !important; }
     }
   </style>
 </head>
@@ -231,7 +229,7 @@ const WA = s => <svg width={s} height={s} viewBox="0 0 24 24" fill="#fff"><path 
 
 // EKG SVG divider component
 const EKGDivider = () => (
-  <div className="ekg-wrap" style={{margin:"20px auto"}}>
+  <div className="ekg-wrap" style={{margin:"10px auto"}}>
     <div className="ekg">
       <svg viewBox="0 0 600 30" preserveAspectRatio="none">
         <path d="M0,15 L80,15 L100,15 L120,2 L140,28 L160,15 L200,15 L260,15 L280,2 L300,28 L320,15 L380,15 L440,15 L460,2 L480,28 L500,15 L600,15"/>
@@ -354,28 +352,28 @@ function App() {
 
     {/* ═══ HEADER NAV ═══ */}
     <header style={{
-      position:"sticky",top:0,zIndex:50,padding:"14px 20px",
+      position:"sticky",top:0,zIndex:50,padding:"10px 14px",
       display:"flex",alignItems:"center",justifyContent:"space-between",
       borderBottom:"1px solid var(--border)",
       background:"rgba(250,251,252,0.82)",backdropFilter:"blur(18px)",WebkitBackdropFilter:"blur(18px)"
     }}>
-      <div style={{display:"flex",alignItems:"center",gap:10}}>
+      <div style={{display:"flex",alignItems:"center",gap:8}}>
         <div style={{
-          width:36,height:36,borderRadius:12,
+          width:30,height:30,borderRadius:10,
           background:"var(--grad-strong)",
           display:"flex",alignItems:"center",justifyContent:"center",
-          fontSize:16,color:"#fff",fontWeight:900
+          fontSize:13,color:"#fff",fontWeight:900
         }}>◉</div>
         <div>
-          <div style={{fontFamily:"var(--fd)",fontSize:18,color:"var(--ink)",letterSpacing:"-0.02em"}}>EyeCheck</div>
-          <div style={{fontSize:9,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".08em",fontWeight:600}}>V4.0 · AI SCREENING</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:15,color:"var(--ink)",letterSpacing:"-0.02em",lineHeight:1.1}}>EyeCheck</div>
+          <div style={{fontSize:8,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".06em",fontWeight:600}}>V4.0 · AI SCREENING</div>
         </div>
       </div>
       <div style={{display:"flex",alignItems:"center",gap:8}}>
         <div style={{
           background:apiReady?"rgba(16,185,129,0.08)":"rgba(245,158,11,0.08)",
           border:"1px solid "+(apiReady?"rgba(16,185,129,0.18)":"rgba(245,158,11,0.18)"),
-          borderRadius:999,padding:"5px 12px",fontSize:10,fontFamily:"var(--fm)",fontWeight:700,
+          borderRadius:999,padding:"4px 9px",fontSize:9,fontFamily:"var(--fm)",fontWeight:700,
           color:apiReady?"var(--secondary2)":"var(--amber)",letterSpacing:".08em",
           display:"flex",alignItems:"center",gap:6
         }}>
@@ -390,56 +388,44 @@ function App() {
       </div>
     </header>
 
-    <main style={{maxWidth:640,margin:"0 auto",padding:"28px 16px"}}>
+    <main style={{maxWidth:640,margin:"0 auto",padding:"14px 12px"}}>
 
     {/* ═══ HOME ═══ */}
     {!img&&(
       <div style={{animation:"fadeUp .7s ease"}}>
         {/* Hero section */}
-        <div style={{textAlign:"center",marginBottom:28}}>
+        <div style={{textAlign:"center",marginBottom:12}}>
           {/* Hero eye with iris scanner effect */}
           <div className="hero-eye" style={{
-            position:"relative",width:170,height:170,margin:"0 auto 22px",
+            position:"relative",width:110,height:110,margin:"0 auto 12px",
             animation:"breathe 4s ease-in-out infinite"
           }}>
             <img src="/static/hero-eye.jpg" alt="EYECHECK" style={{
-              width:156,height:156,borderRadius:"50%",objectFit:"cover",
-              position:"absolute",top:7,left:7,zIndex:2,
-              boxShadow:"0 0 0 1px rgba(37,99,235,0.12), 0 0 40px rgba(37,99,235,0.12), 0 0 80px rgba(16,185,129,0.06)"
+              width:100,height:100,borderRadius:"50%",objectFit:"cover",
+              position:"absolute",top:5,left:5,zIndex:2,
+              boxShadow:"0 0 0 1px rgba(37,99,235,0.12), 0 0 24px rgba(37,99,235,0.10)"
             }}/>
-            {/* Crosshair ring */}
-            <div style={{
-              position:"absolute",inset:0,borderRadius:"50%",
-              border:"1.5px dashed rgba(16,185,129,0.35)",
-              boxShadow:"inset 0 0 0 1px rgba(37,99,235,0.12)"
-            }}/>
-            {/* Crosshair lines */}
-            <div style={{position:"absolute",top:"50%",left:"10%",right:"10%",height:1.5,background:"rgba(16,185,129,0.25)",transform:"translateY(-50%)",zIndex:3,borderRadius:999}}/>
-            <div style={{position:"absolute",left:"50%",top:"10%",bottom:"10%",width:1.5,background:"rgba(16,185,129,0.25)",transform:"translateX(-50%)",zIndex:3,borderRadius:999}}/>
-            {/* Scan line */}
-            <div style={{
-              position:"absolute",left:"5%",right:"5%",height:2.5,zIndex:4,
-              background:"linear-gradient(90deg,transparent,rgba(16,185,129,0.9),rgba(37,99,235,0.8),transparent)",
-              animation:"scanSweep 2.4s ease-in-out infinite",top:"15%"
-            }}/>
+            <div style={{position:"absolute",inset:0,borderRadius:"50%",border:"1.5px dashed rgba(16,185,129,0.30)",boxShadow:"inset 0 0 0 1px rgba(37,99,235,0.10)"}}/>
+            <div style={{position:"absolute",top:"50%",left:"12%",right:"12%",height:1,background:"rgba(16,185,129,0.20)",transform:"translateY(-50%)",zIndex:3,borderRadius:999}}/>
+            <div style={{position:"absolute",left:"50%",top:"12%",bottom:"12%",width:1,background:"rgba(16,185,129,0.20)",transform:"translateX(-50%)",zIndex:3,borderRadius:999}}/>
+            <div style={{position:"absolute",left:"8%",right:"8%",height:2,zIndex:4,background:"linear-gradient(90deg,transparent,rgba(16,185,129,0.9),rgba(37,99,235,0.8),transparent)",animation:"scanSweep 2.4s ease-in-out infinite",top:"15%"}}/>
           </div>
 
           {/* Badge */}
           <div style={{
-            display:"inline-flex",alignItems:"center",gap:8,
+            display:"inline-flex",alignItems:"center",gap:6,
             background:"rgba(37,99,235,0.06)",border:"1px solid rgba(37,99,235,0.14)",
-            borderRadius:999,padding:"7px 16px",fontSize:11,color:"var(--primary2)",
-            fontWeight:800,letterSpacing:".08em",textTransform:"uppercase",marginBottom:16
+            borderRadius:999,padding:"4px 12px",fontSize:9,color:"var(--primary2)",
+            fontWeight:800,letterSpacing:".08em",textTransform:"uppercase",marginBottom:8
           }}>
-            <span style={{width:7,height:7,borderRadius:"50%",background:"var(--secondary)",
-              boxShadow:"0 0 0 5px rgba(16,185,129,0.10)",animation:"pulse 2.2s ease-in-out infinite"}}/>
+            <span style={{width:6,height:6,borderRadius:"50%",background:"var(--secondary)",boxShadow:"0 0 0 4px rgba(16,185,129,0.10)",animation:"pulse 2.2s ease-in-out infinite"}}/>
             SCREENING POR IA
           </div>
 
-          <h1 style={{fontFamily:"var(--fd)",fontSize:"clamp(26px, 5vw, 36px)",lineHeight:1.1,color:"var(--ink)",marginBottom:10,letterSpacing:"-0.02em"}}>
+          <h1 style={{fontFamily:"var(--fd)",fontSize:"clamp(20px, 5vw, 28px)",lineHeight:1.15,color:"var(--ink)",marginBottom:6,letterSpacing:"-0.02em"}}>
             Seu olho conta a saúde<br/><span style={{background:"linear-gradient(90deg,var(--primary),var(--secondary))",WebkitBackgroundClip:"text",backgroundClip:"text",color:"transparent"}}>do seu corpo</span>
           </h1>
-          <p style={{color:"var(--muted)",fontSize:14,fontWeight:400,maxWidth:420,margin:"0 auto"}}>IA analisa 18 condições de saúde pelo seu olho — doenças oculares e sinais sistêmicos em segundos.</p>
+          <p style={{color:"var(--muted)",fontSize:12,fontWeight:400,maxWidth:340,margin:"0 auto",lineHeight:1.5}}>IA analisa 18 condições pelo seu olho — doenças oculares e sinais sistêmicos em segundos.</p>
         </div>
 
         <EKGDivider/>
@@ -451,41 +437,40 @@ function App() {
           className="btn card scan-hover"
           style={{
             borderColor:drag?"var(--primary)":"var(--border)",
-            padding:"30px 22px",textAlign:"center",marginTop:20,marginBottom:20,cursor:"pointer",
-            boxShadow:drag?"0 0 0 4px rgba(37,99,235,0.08), var(--shadow-soft)":"0 10px 26px rgba(15,23,42,0.06)",
+            padding:"16px 16px",textAlign:"center",marginTop:10,marginBottom:12,cursor:"pointer",
+            boxShadow:drag?"0 0 0 3px rgba(37,99,235,0.08), 0 4px 16px rgba(15,23,42,0.06)":"0 4px 16px rgba(15,23,42,0.05)",
             position:"relative",overflow:"hidden"
           }}>
-          {/* Gradient header strip */}
-          <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"var(--grad-strong)",borderRadius:"22px 22px 0 0"}}/>
-          <div style={{fontSize:36,marginBottom:10}}>📸</div>
-          <div style={{fontFamily:"var(--fd)",fontSize:20,color:"var(--ink)",marginBottom:6}}>Iniciar Análise</div>
-          <div style={{fontSize:13,color:"var(--muted)",fontWeight:400}}>Tire uma foto ou faça upload de imagem</div>
-          <div style={{marginTop:12,display:"flex",justifyContent:"center",gap:10}}>
-            <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(37,99,235,0.05)",padding:"4px 10px",borderRadius:8,border:"1px solid rgba(37,99,235,0.08)"}}>📱 CÂMERA</span>
-            <span style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(16,185,129,0.05)",padding:"4px 10px",borderRadius:8,border:"1px solid rgba(16,185,129,0.08)"}}>📁 ARQUIVO</span>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"var(--grad-strong)",borderRadius:"16px 16px 0 0"}}/>
+          <div style={{fontSize:28,marginBottom:6}}>📸</div>
+          <div style={{fontFamily:"var(--fd)",fontSize:17,color:"var(--ink)",marginBottom:3}}>Iniciar Análise</div>
+          <div style={{fontSize:11,color:"var(--muted)",fontWeight:400}}>Tire uma foto ou faça upload</div>
+          <div style={{marginTop:8,display:"flex",justifyContent:"center",gap:8}}>
+            <span style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(37,99,235,0.05)",padding:"3px 8px",borderRadius:6,border:"1px solid rgba(37,99,235,0.08)"}}>📱 CÂMERA</span>
+            <span style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",background:"rgba(16,185,129,0.05)",padding:"3px 8px",borderRadius:6,border:"1px solid rgba(16,185,129,0.08)"}}>📁 ARQUIVO</span>
           </div>
         </div>
 
         {/* Disease grids */}
-        <div className="dual" style={{marginBottom:16}}>
-          <div className="card scan-hover" style={{flex:1,padding:16,position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(37,99,235,0.80), rgba(37,99,235,0.40))"}}/>
-            <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:10,fontWeight:700,letterSpacing:".1em"}}>🔍 OCULAR · 8 CONDIÇÕES</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+        <div className="dual" style={{marginBottom:10}}>
+          <div className="card scan-hover" style={{flex:1,padding:"10px 10px",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg, rgba(37,99,235,0.80), rgba(37,99,235,0.40))"}}/>
+            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:6,fontWeight:700,letterSpacing:".08em"}}>🔍 OCULAR · 8</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
               {GRID_OC.map(d=>(
-                <div key={d.n} style={{background:"rgba(37,99,235,0.04)",border:"1px solid rgba(37,99,235,0.08)",borderRadius:10,padding:"5px 9px",fontSize:10,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
-                  <span style={{fontSize:12}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(37,99,235,0.04)",border:"1px solid rgba(37,99,235,0.08)",borderRadius:8,padding:"3px 6px",fontSize:9,color:"var(--text)",display:"flex",alignItems:"center",gap:3,fontWeight:500}}>
+                  <span style={{fontSize:10}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
           </div>
-          <div className="card scan-hover" style={{flex:1,padding:16,position:"relative",overflow:"hidden"}}>
-            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg, rgba(16,185,129,0.80), rgba(16,185,129,0.40))"}}/>
-            <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:10,fontWeight:700,letterSpacing:".1em"}}>🫀 SISTÊMICO · 8 CONDIÇÕES</div>
-            <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+          <div className="card scan-hover" style={{flex:1,padding:"10px 10px",position:"relative",overflow:"hidden"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg, rgba(16,185,129,0.80), rgba(16,185,129,0.40))"}}/>
+            <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:6,fontWeight:700,letterSpacing:".08em"}}>🫀 SISTÊMICO · 8</div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:4}}>
               {GRID_SY.map(d=>(
-                <div key={d.n} style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.08)",borderRadius:10,padding:"5px 9px",fontSize:10,color:"var(--text)",display:"flex",alignItems:"center",gap:4,fontWeight:500}}>
-                  <span style={{fontSize:12}}>{d.i}</span>{d.n}
+                <div key={d.n} style={{background:"rgba(16,185,129,0.04)",border:"1px solid rgba(16,185,129,0.08)",borderRadius:8,padding:"3px 6px",fontSize:9,color:"var(--text)",display:"flex",alignItems:"center",gap:3,fontWeight:500}}>
+                  <span style={{fontSize:10}}>{d.i}</span>{d.n}
                 </div>
               ))}
             </div>
@@ -493,29 +478,29 @@ function App() {
         </div>
 
         {/* Stats bar */}
-        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:10,marginBottom:18}}>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:6,marginBottom:10}}>
           {[
             {n:"18",l:"Condições"},
             {n:"2",l:"Modelos IA"},
             {n:"<3s",l:"Análise"},
           ].map((s,i)=>(
-            <div key={i} className="card" style={{padding:"16px 12px",textAlign:"center",position:"relative",overflow:"hidden"}}>
-              <div style={{position:"absolute",bottom:0,left:"-20%",right:"-20%",height:50,background:"linear-gradient(90deg,rgba(37,99,235,0.06),rgba(16,185,129,0.05))",transform:"rotate(-3deg)",opacity:.5}}/>
-              <div style={{fontFamily:"var(--fd)",fontSize:28,color:"var(--primary2)",position:"relative",zIndex:1}}>{s.n}</div>
-              <div style={{fontSize:9,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".14em",fontWeight:800,position:"relative",zIndex:1}}>{s.l}</div>
+            <div key={i} className="card" style={{padding:"10px 8px",textAlign:"center",position:"relative",overflow:"hidden"}}>
+              <div style={{position:"absolute",bottom:0,left:"-20%",right:"-20%",height:30,background:"linear-gradient(90deg,rgba(37,99,235,0.05),rgba(16,185,129,0.04))",transform:"rotate(-3deg)",opacity:.4}}/>
+              <div style={{fontFamily:"var(--fd)",fontSize:20,color:"var(--primary2)",position:"relative",zIndex:1}}>{s.n}</div>
+              <div style={{fontSize:8,color:"var(--muted)",textTransform:"uppercase",letterSpacing:".1em",fontWeight:800,position:"relative",zIndex:1}}>{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* WhatsApp share */}
         <button onClick={shareApp} className="btn" style={{
-          width:"100%",padding:"14px",borderRadius:14,border:"none",
+          width:"100%",padding:"10px",borderRadius:12,border:"none",
           background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",
-          fontFamily:"var(--fb)",fontSize:14,fontWeight:700,
-          display:"flex",alignItems:"center",justifyContent:"center",gap:10,
-          boxShadow:"0 10px 30px rgba(37,211,102,0.20)"
+          fontFamily:"var(--fb)",fontSize:12,fontWeight:700,
+          display:"flex",alignItems:"center",justifyContent:"center",gap:8,
+          boxShadow:"0 6px 20px rgba(37,211,102,0.18)"
         }}>
-          {WA(18)} Enviar pra um amigo
+          {WA(16)} Enviar pra um amigo
         </button>
       </div>
     )}
@@ -524,14 +509,13 @@ function App() {
     {img&&(
       <div style={{animation:"fadeUp .5s ease"}}>
         {/* Scanner frame */}
-        <div className="card" style={{position:"relative",borderRadius:20,overflow:"hidden",marginBottom:14,padding:0}}>
-          {/* Top gradient strip */}
-          <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"var(--grad-strong)",zIndex:10}}/>
+        <div className="card" style={{position:"relative",borderRadius:14,overflow:"hidden",marginBottom:8,padding:0}}>
+          <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"var(--grad-strong)",zIndex:10}}/>
           {img&&img!=="ok"?(
-            <img src={img} alt="Eye" style={{width:"100%",display:"block",maxHeight:320,objectFit:"contain",background:"#0B1220"}}/>
+            <img src={img} alt="Eye" style={{width:"100%",display:"block",maxHeight:240,objectFit:"contain",background:"#0B1220"}}/>
           ):(
-            <div style={{width:"100%",height:160,display:"flex",alignItems:"center",justifyContent:"center",background:"#0B1220"}}>
-              <span style={{fontSize:11,color:"var(--secondary)",fontFamily:"var(--fm)"}}>IMAGEM CARREGADA</span>
+            <div style={{width:"100%",height:120,display:"flex",alignItems:"center",justifyContent:"center",background:"#0B1220"}}>
+              <span style={{fontSize:10,color:"var(--secondary)",fontFamily:"var(--fm)"}}>IMAGEM CARREGADA</span>
             </div>
           )}
           {/* Scanner overlay */}
@@ -541,13 +525,13 @@ function App() {
                 <div className="sb sb-tl"/><div className="sb sb-tr"/><div className="sb sb-bl"/><div className="sb sb-br"/>
               </div>
               <div className="scan-line"/>
-              <div style={{position:"absolute",bottom:16,left:0,right:0,textAlign:"center"}}>
+              <div style={{position:"absolute",bottom:10,left:0,right:0,textAlign:"center"}}>
                 <div style={{
-                  display:"inline-block",background:"rgba(255,255,255,0.92)",borderRadius:12,
-                  padding:"8px 18px",fontFamily:"var(--fm)",fontSize:10,
-                  color:"var(--primary)",letterSpacing:".08em",fontWeight:700,
+                  display:"inline-block",background:"rgba(255,255,255,0.92)",borderRadius:10,
+                  padding:"5px 12px",fontFamily:"var(--fm)",fontSize:9,
+                  color:"var(--primary)",letterSpacing:".06em",fontWeight:700,
                   border:"1px solid rgba(37,99,235,0.14)",
-                  boxShadow:"0 10px 30px rgba(15,23,42,0.12)"
+                  boxShadow:"0 6px 20px rgba(15,23,42,0.10)"
                 }}>
                   ANALISANDO PADRÕES OCULARES...
                 </div>
@@ -557,39 +541,39 @@ function App() {
           {/* Result badge */}
           {res&&primary&&!bothNormal&&(
             <div style={{
-              position:"absolute",top:12,right:12,
-              background:urgC(primary.urgency),color:"#fff",borderRadius:10,
-              padding:"5px 12px",fontSize:10,fontWeight:800,fontFamily:"var(--fm)",letterSpacing:".06em",
-              boxShadow:"0 4px 12px rgba(0,0,0,0.15)"
+              position:"absolute",top:8,right:8,
+              background:urgC(primary.urgency),color:"#fff",borderRadius:8,
+              padding:"3px 8px",fontSize:9,fontWeight:800,fontFamily:"var(--fm)",letterSpacing:".05em",
+              boxShadow:"0 3px 10px rgba(0,0,0,0.15)"
             }}>{primary.top_prediction_pt?.toUpperCase()}</div>
           )}
         </div>
 
         {/* Action buttons */}
-        <div style={{display:"flex",gap:10,marginBottom:16}}>
+        <div style={{display:"flex",gap:6,marginBottom:10}}>
           {!busy&&!res&&(
             <button onClick={apiReady?analyze:undefined} className="btn" style={{
-              flex:1,padding:"14px",borderRadius:14,border:"none",
+              flex:1,padding:"10px",borderRadius:12,border:"none",
               background:apiReady?"var(--grad-strong)":"rgba(37,99,235,0.08)",
               color:apiReady?"#fff":"var(--dim)",
-              fontFamily:"var(--fb)",fontSize:13,fontWeight:800,letterSpacing:".06em",textTransform:"uppercase",
-              boxShadow:apiReady?"0 10px 30px rgba(37,99,235,0.18)":"none",opacity:apiReady?1:.6
+              fontFamily:"var(--fb)",fontSize:12,fontWeight:800,letterSpacing:".05em",textTransform:"uppercase",
+              boxShadow:apiReady?"0 6px 20px rgba(37,99,235,0.16)":"none",opacity:apiReady?1:.6
             }}>{apiReady?"Analisar":"Iniciando..."}</button>
           )}
           <button onClick={reset} className="btn" style={{
-            flex:res?1:0,minWidth:44,padding:"14px",borderRadius:14,
+            flex:res?1:0,minWidth:38,padding:"10px",borderRadius:12,
             border:"1px solid var(--border)",background:"var(--surface)",color:"var(--muted)",
-            fontFamily:"var(--fb)",fontSize:13,fontWeight:600
+            fontFamily:"var(--fb)",fontSize:12,fontWeight:600
           }}>{res?"Nova Foto":"✕"}</button>
           {res&&(
             <button onClick={shareResult} className="btn" style={{
-              flex:1,padding:"14px",borderRadius:14,border:"none",
+              flex:1,padding:"10px",borderRadius:12,border:"none",
               background:"linear-gradient(135deg,#25D366,#128C7E)",color:"#fff",
-              fontFamily:"var(--fb)",fontSize:13,fontWeight:700,
-              display:"flex",alignItems:"center",justifyContent:"center",gap:8,
-              boxShadow:"0 10px 24px rgba(37,211,102,0.18)"
+              fontFamily:"var(--fb)",fontSize:12,fontWeight:700,
+              display:"flex",alignItems:"center",justifyContent:"center",gap:6,
+              boxShadow:"0 6px 18px rgba(37,211,102,0.16)"
             }}>
-              {WA(15)} Compartilhar
+              {WA(14)} Compartilhar
             </button>
           )}
         </div>
@@ -597,42 +581,41 @@ function App() {
         {/* ═══ BOTH NORMAL ═══ */}
         {bothNormal&&(
           <div className="card" style={{
-            textAlign:"center",padding:"34px 22px",marginBottom:16,
+            textAlign:"center",padding:"20px 16px",marginBottom:10,
             borderColor:"rgba(16,185,129,0.20)",animation:"pop .5s ease",
-            boxShadow:"0 10px 40px rgba(16,185,129,0.08)",position:"relative",overflow:"hidden"
+            boxShadow:"0 6px 24px rgba(16,185,129,0.06)",position:"relative",overflow:"hidden"
           }}>
-            <div style={{position:"absolute",top:0,left:0,right:0,height:4,background:"linear-gradient(90deg,var(--secondary),var(--primary))"}}/>
-            <svg width="64" height="64" viewBox="0 0 64 64" style={{margin:"0 auto 14px"}}>
+            <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,var(--secondary),var(--primary))"}}/>
+            <svg width="48" height="48" viewBox="0 0 64 64" style={{margin:"0 auto 8px"}}>
               <circle cx="32" cy="32" r="28" fill="none" stroke="var(--secondary)" strokeWidth="2.5" opacity=".25"/>
               <path d="M20 32 L28 40 L44 24" fill="none" stroke="var(--secondary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="40" strokeDashoffset="40" style={{animation:"checkDraw .8s .3s forwards"}}/>
             </svg>
-            <div style={{fontFamily:"var(--fd)",fontSize:24,color:"var(--secondary2)",marginBottom:6}}>Olhos Saudáveis</div>
-            <div style={{fontSize:14,color:"var(--muted)",fontWeight:400}}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
+            <div style={{fontFamily:"var(--fd)",fontSize:18,color:"var(--secondary2)",marginBottom:3}}>Olhos Saudáveis</div>
+            <div style={{fontSize:12,color:"var(--muted)",fontWeight:400}}>Nenhum sinal de doença ocular ou sistêmica detectado</div>
           </div>
         )}
 
         {/* ═══ COMBINED URGENCY ═══ */}
         {res&&!bothNormal&&(
-          <div style={{marginBottom:14,animation:"slideUp .6s ease"}}>
+          <div style={{marginBottom:8,animation:"slideUp .6s ease"}}>
             <div className="card" style={{
-              padding:"14px 18px",display:"flex",alignItems:"center",gap:14,
+              padding:"10px 12px",display:"flex",alignItems:"center",gap:10,
               background:urgBg(res.combined_urgency),
               borderColor:urgBorder(res.combined_urgency)
             }}>
               <div style={{
-                width:42,height:42,borderRadius:14,
+                width:34,height:34,borderRadius:10,
                 background:"rgba(255,255,255,0.75)",border:"1px solid "+urgBorder(res.combined_urgency),
-                display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0,
-                boxShadow:"0 8px 20px rgba(15,23,42,0.06)"
+                display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0
               }}>
                 {res.combined_urgency==="high"?"🔴":res.combined_urgency==="moderate"?"🟡":"🟢"}
               </div>
               <div style={{flex:1}}>
-                <div style={{fontSize:10,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),letterSpacing:".12em",fontWeight:700}}>URGÊNCIA</div>
-                <div style={{fontSize:16,fontWeight:800,color:urgC(res.combined_urgency)}}>{urgL(res.combined_urgency)}</div>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:urgC(res.combined_urgency),letterSpacing:".10em",fontWeight:700}}>URGÊNCIA</div>
+                <div style={{fontSize:14,fontWeight:800,color:urgC(res.combined_urgency)}}>{urgL(res.combined_urgency)}</div>
               </div>
-              <div className="severity-badge" style={{background:"rgba(255,255,255,0.70)"}}>
-                <span className="dot" style={{background:urgC(res.combined_urgency),boxShadow:"0 0 0 5px "+urgBorder(res.combined_urgency)}}/>
+              <div className="severity-badge" style={{background:"rgba(255,255,255,0.70)",fontSize:9,padding:"4px 8px"}}>
+                <span className="dot" style={{background:urgC(res.combined_urgency),boxShadow:"0 0 0 4px "+urgBorder(res.combined_urgency),width:6,height:6}}/>
                 {primary?.type==="ocular"?"OCULAR":"SISTÊMICO"}
               </div>
             </div>
@@ -642,53 +625,51 @@ function App() {
         {/* ═══ PRIMARY DIAGNOSIS ═══ */}
         {res&&primary&&!bothNormal&&(
           <div className="card detect-item" style={{
-            padding:0,marginBottom:14,animation:"slideUp .7s ease",
+            padding:0,marginBottom:10,animation:"slideUp .7s ease",
             flexDirection:"column",gap:0,borderColor:urgBorder(primary.urgency),
-            borderLeftWidth:4,borderLeftColor:urgC(primary.urgency)
+            borderLeftWidth:3,borderLeftColor:urgC(primary.urgency)
           }}>
-            {/* Header with gradient */}
             <div style={{
-              padding:"16px 18px 14px",
-              background:primary.type==="systemic"?"linear-gradient(135deg,rgba(16,185,129,0.06),rgba(16,185,129,0.02))":"linear-gradient(135deg,rgba(37,99,235,0.06),rgba(37,99,235,0.02))",
+              padding:"10px 12px 8px",
+              background:primary.type==="systemic"?"linear-gradient(135deg,rgba(16,185,129,0.05),rgba(16,185,129,0.01))":"linear-gradient(135deg,rgba(37,99,235,0.05),rgba(37,99,235,0.01))",
               borderBottom:"1px solid var(--border)"
             }}>
-              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:12}}>
-                <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".12em",fontWeight:700}}>● DIAGNÓSTICO PRINCIPAL</div>
-                <div className={"severity-badge "+sevClass(primary.severity_level)}>
-                  <span className="dot"/>
+              <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}>
+                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".10em",fontWeight:700}}>● DIAGNÓSTICO PRINCIPAL</div>
+                <div className={"severity-badge "+sevClass(primary.severity_level)} style={{fontSize:9,padding:"3px 7px"}}>
+                  <span className="dot" style={{width:6,height:6}}/>
                   {primary.severity_level==="high"?"ALTA":primary.severity_level==="moderate"?"MÉDIA":"BAIXA"}
                 </div>
               </div>
-              <div style={{display:"flex",alignItems:"center",gap:14}}>
+              <div style={{display:"flex",alignItems:"center",gap:10}}>
                 <div style={{
-                  width:48,height:48,borderRadius:16,
+                  width:38,height:38,borderRadius:12,
                   background:primary.type==="systemic"?"rgba(16,185,129,0.08)":"rgba(37,99,235,0.08)",
                   border:"1px solid "+(primary.type==="systemic"?"rgba(16,185,129,0.14)":"rgba(37,99,235,0.14)"),
-                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flexShrink:0
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flexShrink:0
                 }}>{primary.type==="systemic"?"🫀":"🔍"}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontFamily:"var(--fd)",fontSize:22,color:"var(--ink)"}}>{primary.top_prediction_pt}</div>
-                  <div style={{fontSize:11,color:"var(--muted)",marginTop:2,fontWeight:500}}>{primary.type==="systemic"?"Análise Sistêmica":"Análise Ocular"}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontFamily:"var(--fd)",fontSize:17,color:"var(--ink)"}}>{primary.top_prediction_pt}</div>
+                  <div style={{fontSize:10,color:"var(--muted)",fontWeight:500}}>{primary.type==="systemic"?"Análise Sistêmica":"Análise Ocular"}</div>
                 </div>
-                <RingGauge pct={Math.round((primary.confidence||0)*100)} size={68} strokeWidth={6}
+                <RingGauge pct={Math.round((primary.confidence||0)*100)} size={52} strokeWidth={5}
                   color={urgC(primary.urgency)}/>
               </div>
             </div>
 
-            {/* Body */}
-            <div style={{padding:"16px 18px"}}>
+            <div style={{padding:"10px 12px"}}>
               {/* Explanation */}
               {primary.explanation&&(
                 <div style={{
-                  background:"var(--bg2)",borderRadius:14,padding:14,marginBottom:14,
-                  border:"1px solid rgba(17,24,39,0.06)"
+                  background:"var(--bg2)",borderRadius:10,padding:10,marginBottom:10,
+                  border:"1px solid rgba(17,24,39,0.05)"
                 }}>
-                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",marginBottom:6,fontWeight:700}}>O QUE É ISSO?</div>
-                  <div style={{fontSize:13,color:"var(--text)",lineHeight:1.7,fontWeight:400}}>{primary.explanation}</div>
+                  <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".08em",marginBottom:4,fontWeight:700}}>O QUE É ISSO?</div>
+                  <div style={{fontSize:11,color:"var(--text)",lineHeight:1.55,fontWeight:400}}>{primary.explanation}</div>
                   {primary.severity&&(
-                    <div style={{marginTop:10,display:"flex",alignItems:"center",gap:6}}>
-                      <span style={{fontSize:12}}>{primary.severity_level==="none"?"✅":primary.severity_level==="low"?"💚":primary.severity_level==="moderate"?"🟡":"🟠"}</span>
-                      <span style={{fontSize:12,fontWeight:600,color:urgC(primary.severity_level==="high"?"high":primary.severity_level==="moderate"?"moderate":"low")}}>{primary.severity}</span>
+                    <div style={{marginTop:6,display:"flex",alignItems:"center",gap:5}}>
+                      <span style={{fontSize:11}}>{primary.severity_level==="none"?"✅":primary.severity_level==="low"?"💚":primary.severity_level==="moderate"?"🟡":"🟠"}</span>
+                      <span style={{fontSize:11,fontWeight:600,color:urgC(primary.severity_level==="high"?"high":primary.severity_level==="moderate"?"moderate":"low")}}>{primary.severity}</span>
                     </div>
                   )}
                 </div>
@@ -697,11 +678,11 @@ function App() {
               {/* Systemic alert */}
               {primary.systemic_alert&&(
                 <div style={{
-                  background:"rgba(245,158,11,0.05)",borderRadius:14,padding:13,marginBottom:14,
-                  border:"1px solid rgba(245,158,11,0.14)"
+                  background:"rgba(245,158,11,0.04)",borderRadius:10,padding:9,marginBottom:10,
+                  border:"1px solid rgba(245,158,11,0.12)"
                 }}>
-                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--amber)",letterSpacing:".1em",fontWeight:700,marginBottom:4}}>⚠ SINAL SISTÊMICO</div>
-                  <div style={{fontSize:12,color:"var(--text)",lineHeight:1.6}}>
+                  <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--amber)",letterSpacing:".08em",fontWeight:700,marginBottom:3}}>⚠ SINAL SISTÊMICO</div>
+                  <div style={{fontSize:11,color:"var(--text)",lineHeight:1.5}}>
                     <strong>Doença:</strong> {primary.systemic_alert.disease}<br/>
                     <strong>Sinal:</strong> {primary.systemic_alert.sign}
                   </div>
@@ -710,20 +691,20 @@ function App() {
 
               {/* Findings */}
               {primary.findings&&(
-                <div style={{marginBottom:14}}>
-                  <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",marginBottom:8,fontWeight:700}}>ACHADOS</div>
+                <div style={{marginBottom:10}}>
+                  <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".08em",marginBottom:5,fontWeight:700}}>ACHADOS</div>
                   {primary.findings.map((f,i)=>(
                     <div key={i} style={{
-                      display:"flex",gap:8,marginBottom:5,fontSize:12,color:"var(--text)",
+                      display:"flex",gap:6,marginBottom:3,fontSize:11,color:"var(--text)",
                       animation:`stagger ${.3+i*.08}s ease both`
                     }}>
                       <span style={{
-                        width:18,height:18,borderRadius:999,flexShrink:0,
-                        background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.14)",
+                        width:15,height:15,borderRadius:999,flexShrink:0,
+                        background:"rgba(16,185,129,0.08)",border:"1px solid rgba(16,185,129,0.12)",
                         display:"flex",alignItems:"center",justifyContent:"center",
-                        fontSize:8,color:"var(--secondary2)",fontWeight:900,marginTop:1
+                        fontSize:7,color:"var(--secondary2)",fontWeight:900,marginTop:1
                       }}>✓</span>
-                      <span style={{lineHeight:1.5}}>{f}</span>
+                      <span style={{lineHeight:1.45}}>{f}</span>
                     </div>
                   ))}
                 </div>
@@ -732,11 +713,11 @@ function App() {
               {/* Recommendation */}
               {primary.recommendation&&(
                 <div style={{
-                  background:"linear-gradient(135deg,rgba(37,99,235,0.05),rgba(16,185,129,0.04))",
-                  borderRadius:14,padding:13,
-                  border:"1px solid rgba(37,99,235,0.10)"
+                  background:"linear-gradient(135deg,rgba(37,99,235,0.04),rgba(16,185,129,0.03))",
+                  borderRadius:10,padding:9,
+                  border:"1px solid rgba(37,99,235,0.08)"
                 }}>
-                  <div style={{fontSize:13,color:"var(--primary2)",lineHeight:1.6,fontWeight:500}}>💊 {primary.recommendation}</div>
+                  <div style={{fontSize:11,color:"var(--primary2)",lineHeight:1.5,fontWeight:500}}>💊 {primary.recommendation}</div>
                 </div>
               )}
             </div>
@@ -746,29 +727,29 @@ function App() {
         {/* ═══ SECONDARY ═══ */}
         {secondary&&(
           <div className="card" style={{
-            padding:0,marginBottom:14,animation:"slideUp .8s ease",
+            padding:0,marginBottom:10,animation:"slideUp .8s ease",
             position:"relative",overflow:"hidden",
-            borderLeftWidth:4,borderLeftStyle:"solid",
+            borderLeftWidth:3,borderLeftStyle:"solid",
             borderLeftColor:secondary.type==="systemic"?"var(--secondary)":"var(--primary)"
           }}>
-            <div style={{padding:"14px 18px"}}>
-              <div style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".12em",marginBottom:10,fontWeight:700}}>● ACHADO SECUNDÁRIO</div>
-              <div style={{display:"flex",alignItems:"center",gap:12}}>
+            <div style={{padding:"10px 12px"}}>
+              <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".10em",marginBottom:6,fontWeight:700}}>● ACHADO SECUNDÁRIO</div>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
                 <div style={{
-                  width:42,height:42,borderRadius:14,
+                  width:34,height:34,borderRadius:10,
                   background:secondary.type==="systemic"?"rgba(16,185,129,0.08)":"rgba(37,99,235,0.08)",
                   border:"1px solid "+(secondary.type==="systemic"?"rgba(16,185,129,0.14)":"rgba(37,99,235,0.14)"),
-                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flexShrink:0
+                  display:"flex",alignItems:"center",justifyContent:"center",fontSize:16,flexShrink:0
                 }}>{secondary.type==="systemic"?"🫀":"🔍"}</div>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:16,fontWeight:800,color:"var(--ink)"}}>{secondary.top_prediction_pt}</div>
-                  <div style={{fontSize:11,color:"var(--muted)",fontWeight:400}}>{secondary.type==="systemic"?"Sistêmico":"Ocular"} · {secondary.explanation?.split(".")[0]}.</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{fontSize:14,fontWeight:800,color:"var(--ink)"}}>{secondary.top_prediction_pt}</div>
+                  <div style={{fontSize:10,color:"var(--muted)",fontWeight:400}}>{secondary.type==="systemic"?"Sistêmico":"Ocular"} · {secondary.explanation?.split(".")[0]}.</div>
                 </div>
-                <RingGauge pct={Math.round((secondary.confidence||0)*100)} size={56} strokeWidth={5}
+                <RingGauge pct={Math.round((secondary.confidence||0)*100)} size={44} strokeWidth={4}
                   color={urgC(secondary.urgency)}/>
               </div>
               {secondary.recommendation&&(
-                <div style={{marginTop:12,fontSize:12,color:"var(--primary2)",paddingLeft:54,fontWeight:500}}>💊 {secondary.recommendation}</div>
+                <div style={{marginTop:8,fontSize:11,color:"var(--primary2)",paddingLeft:42,fontWeight:500}}>💊 {secondary.recommendation}</div>
               )}
             </div>
           </div>
@@ -778,14 +759,14 @@ function App() {
 
         {/* All scores (expandable) */}
         {res&&!bothNormal&&(
-          <details className="card" style={{padding:16,marginBottom:14,marginTop:8}}>
-            <summary style={{fontSize:10,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".1em",cursor:"pointer",outline:"none",fontWeight:700}}>TODAS AS PROBABILIDADES</summary>
-            <div style={{marginTop:12,display:"flex",gap:12}} className="dual">
+          <details className="card" style={{padding:10,marginBottom:10,marginTop:6}}>
+            <summary style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--dim)",letterSpacing:".08em",cursor:"pointer",outline:"none",fontWeight:700}}>TODAS AS PROBABILIDADES</summary>
+            <div style={{marginTop:8,display:"flex",gap:8}} className="dual">
               <div style={{flex:1}}>
-                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:8,fontWeight:700,letterSpacing:".1em"}}>OCULAR</div>
+                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--primary)",marginBottom:5,fontWeight:700,letterSpacing:".08em"}}>OCULAR</div>
                 {res.ocular_analysis?.all_scores&&Object.entries(res.ocular_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
-                  <div key={k} style={{marginBottom:4}}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10}}>
+                  <div key={k} style={{marginBottom:3}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
                       <span style={{color:"var(--text)",fontWeight:500}}>{k}</span>
                       <span style={{fontFamily:"var(--fm)",color:"var(--dim)"}}>{Math.round(v*100)}%</span>
                     </div>
@@ -796,10 +777,10 @@ function App() {
                 ))}
               </div>
               <div style={{flex:1}}>
-                <div style={{fontSize:9,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:8,fontWeight:700,letterSpacing:".1em"}}>SISTÊMICO</div>
+                <div style={{fontSize:8,fontFamily:"var(--fm)",color:"var(--secondary2)",marginBottom:5,fontWeight:700,letterSpacing:".08em"}}>SISTÊMICO</div>
                 {res.systemic_analysis?.all_scores&&Object.entries(res.systemic_analysis.all_scores).sort((a,b)=>b[1]-a[1]).map(([k,v])=>(
-                  <div key={k} style={{marginBottom:4}}>
-                    <div style={{display:"flex",justifyContent:"space-between",fontSize:10}}>
+                  <div key={k} style={{marginBottom:3}}>
+                    <div style={{display:"flex",justifyContent:"space-between",fontSize:9}}>
                       <span style={{color:"var(--text)",fontWeight:500}}>{k}</span>
                       <span style={{fontFamily:"var(--fm)",color:"var(--dim)"}}>{Math.round(v*100)}%</span>
                     </div>
@@ -813,18 +794,18 @@ function App() {
           </details>
         )}
 
-        {err&&<div className="card" style={{padding:14,marginBottom:14,borderColor:"rgba(239,68,68,0.18)",textAlign:"center",fontSize:13,color:"#ef4444",background:"rgba(239,68,68,0.04)"}}>{err}</div>}
+        {err&&<div className="card" style={{padding:10,marginBottom:10,borderColor:"rgba(239,68,68,0.18)",textAlign:"center",fontSize:11,color:"#ef4444",background:"rgba(239,68,68,0.04)"}}>{err}</div>}
       </div>
     )}
 
     {/* ═══ FOOTER ═══ */}
-    <div style={{marginTop:36}}>
+    <div style={{marginTop:16}}>
       <EKGDivider/>
-      <div style={{textAlign:"center",paddingTop:12,paddingBottom:8}}>
-        <div style={{fontSize:11,color:"var(--muted)",fontWeight:500,lineHeight:1.8}}>
+      <div style={{textAlign:"center",paddingTop:6,paddingBottom:6}}>
+        <div style={{fontSize:10,color:"var(--muted)",fontWeight:500,lineHeight:1.6}}>
           ⚠️ Triagem de bem-estar — não é diagnóstico médico
         </div>
-        <div style={{fontSize:9,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".08em",marginTop:4}}>
+        <div style={{fontSize:8,color:"var(--dim)",fontFamily:"var(--fm)",letterSpacing:".06em",marginTop:2}}>
           EYECHECK V4.0 · MobileNetV2 TFLite · 18 condições · BBG © 2026
         </div>
       </div>
